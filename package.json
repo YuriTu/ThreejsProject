@@ -1,0 +1,25 @@
+{
+  "name": "threejs",
+  "version": "1.0.0",
+  "description": "practise for canvas",
+  "main": "webpack.config.js",
+  "dependencies": {},
+  "devDependencies": {
+    "babel": "^6.5.2",
+    "three": "^0.78.0",
+    "webpack": "^1.13.1"
+  },
+  "scripts": {
+    "dev": "webpack-dev-server --hot --inline --progress --color --host 0.0.0.0 --port 9001"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/YuriTu/ThreejsProject.git"
+  },
+  "author": "Yuri",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/YuriTu/ThreejsProject/issues"
+  },
+  "homepage": "https://github.com/YuriTu/ThreejsProject#readme"
+}
