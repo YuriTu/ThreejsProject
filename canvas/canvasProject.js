@@ -6,68 +6,148 @@ let ca = document.getElementById('world')
 let c = ca.getContext("2d")
 c.b =()=> c.beginPath();
 const pi = Math.PI;
+const config = {
+    margin : 40,
+    origin : {x:40,y:(c.canvas.height-40)},
+    verticalSpace:10,
+    horizontalSpace:10,
+    tickWidth:10,
+    tickLineWidth:0.5,
+    tickColor:'navy',
+    axisLineWidth:1,
+    axisColor : "red",
+}
+config.top = config.margin;
+config.right = c.canvas.width - config.margin;
+config.width = config.right - config.origin.x,
+config.height = config.origin.y - config.top;
+config.verticalTicks = config.height/config.verticalSpace;
+config.horizontalTicks = config.width/config.horizontalSpace;
+
 class Canvas {
     constructor(){
-        this.shadow = 'rgba(0,0,0,0.7)';
+        this.shadowColor = 'rgba(0,0,0,0.7)';
         this.red = 'rgba(255,0,0,1)';
     }
 
-    draw(){
-        c.strokeStyle = this.red;
-        c.shadowColor = this.shadow;
-        c.shadowOffsetX = 5;
-        c.shadowOffsetY = -5;
-        c.shadowBlur = 10;
-        c.strokeRect(75,100,200,200);
-    }
     drawDefault(){
         c.font = '24px arial';
         c.lineWidth = '2';
+        c.strokeStyle = '#ff0000'
     }
-    drawStrokeText(text){
-        c.strokeStyle = '#ff0000';
-        c.strokeText(text,100,100);
+    drawGrid(width,color,stepx,stepy){
+        c.lineWidth = width;
+        c.strokeStyle = color;
+        // width
+        for(let i = stepx;i<c.canvas.width;i+= stepx){
+            c.b();
+            c.moveTo(i,0);
+            c.lineTo(i,c.canvas.height)
+            c.stroke()
+        }
+        for(let i = stepy;i<c.canvas.height;i+= stepy){
+            c.b();
+            c.moveTo(0,i);
+            c.lineTo(c.canvas.width,i);
+            c.stroke();
+        }
+
     }
-    drawFillText(text){
-        c.fillStyle = '#00ff00';
-        c.fillText(text,300,100);
+    drawAxes(){
+        const d = config;
+        c.save()
+        c.strokeStyle = d.axisColor;
+        c.lineWidth = d.axisLineWidth;
+        this.drawHorAxis()
+        this.drawVerAxis()
+
+        c.lineWidth = 0.5;
+        c.strokeStyle = d.tickColor;
+        this.drawHorTick()
+        this.drawVerTick()
     }
-    drawFillStrokeText(text){
-        c.fillStyle = '#0000ff';
-        c.strokeStyle= '#00ff00';
-        c.fillText(text,600,100);
-        c.strokeText(text,600,100)
-    }
-    fillRect(){
-        c.beginPath();
-        c.rect(100,300,100,100);
-        c.rect(300,300,150,150);
-        c.stroke()
-        c.fill();
-    }
-    strokeRect(){
-        c.lineWidth = '5';
-        c.beginPath();
-        c.rect(300,300,150,50);
-        c.closePath();
-        c.stroke()
-        c.fill()
-    }
-    fillCirCle(){
+    drawHorAxis(){
         c.b();
-        c.arc(100,500,20,0,Math.PI*3/2);
-        c.fill();
+        c.moveTo(config.origin.x,config.origin.y)
+        c.lineTo(config.right,config.origin.y)
+        c.stroke();
     }
-    strokeCirCle(){
-        c.b();
-        c.arc(300,500,100,0,pi*2,false);
-        c.arc(300,500,80,0,pi*2,true);
+    drawVerAxis(){
+        c.b()
+        c.moveTo(config.origin.x,config.origin.y)
+        c.lineTo(config.origin.x,config.top)
+        c.stroke()
+    }
+    drawVerTick(){
+        let x;
+        for(let i = 1;i< config.verticalTicks;i++){
+            c.b()
+            if( i % 5 === 0){
+                x = config.tickWidth
+            }else{
+                x = config.tickWidth / 2;
+            }
+            c.moveTo(config.origin.x - x,
+                config.origin.y - i * config.verticalSpace
+
+            )
+            c.lineTo(config.origin.x + x,
+                config.origin.y - i * config.verticalSpace,
+
+            )
+            c.stroke()
+        }
+    }
+    drawHorTick(){
+        let y;
+        for (let i = 1;i< config.horizontalTicks;i++){
+            c.b()
+            if( i % 5 === 0){
+                y = config.tickWidth;
+            }else{
+                y = config.tickWidth/2;
+            }
+            c.moveTo(config.origin.x + i * config.horizontalSpace,
+                config.origin.y - y
+            );
+            c.lineTo(
+                config.origin.x + i * config.horizontalSpace,
+                config.origin.y + y
+            )
+            c.stroke()
+        }
+
+
+    }
+    drawBG(){
+        // c.b()
+        c.fillStyle = '#666666';
+        this.myRect(100,100,500,500)
+        // c.fill()
+
+    }
+    drawRect(){
+        // c.b();
+        c.rect(300,150,50,50)
+        // c.fill()
+        // c.closePath()
+    }
+    drawCir(){
+        // c.b()
+        c.arc(400,500,50,0,pi*2)
+        // c.fill()
+        // c.closePath()
+    }
+
+    myRect(x,y,w,h){
+        // c.b();
+        c.moveTo(x,y)
+        c.lineTo(x,y + h)
+        c.lineTo(x+w,y + h)
+        c.lineTo(x+w,y)
         // c.closePath();
-        // c.stroke();
-        this.shadCir()
-        c.fill();
     }
-    shadCir(){
+    shadow(){
         c.shadowColor = 'rgba(0,0,0,0.5)';
         c.shadowOffsetX = 10;
         c.shadowOffsetY = 10;
@@ -77,42 +157,6 @@ class Canvas {
 
 let C = new Canvas();
 C.drawDefault();
-C.drawStrokeText('hello world stroke');
-// C.drawFillText('the world - fill');
-// C.drawFillStrokeText('dio! - fill stroke');
-// C.fillRect();
-// C.strokeRect();
-// C.fillCirCle();
-C.strokeCirCle();
-//
-// var context = document.getElementById('canvas').getContext('2d');
-//
-// // Functions..........................................................
-//
-// function drawGrid(context, color, stepx, stepy) {
-//     context.save()
-//
-//     context.strokeStyle = color;
-//     context.lineWidth = 0.5;
-//
-//     for (var i = stepx + 0.5; i < context.canvas.width; i += stepx) {
-//         context.beginPath();
-//         context.moveTo(i, 0);
-//         context.lineTo(i, context.canvas.height);
-//         context.stroke();
-//         context.closePath();
-//     }
-//     for (var i = stepy + 0.5; i < context.canvas.height; i += stepy) {
-//         context.beginPath();
-//         context.moveTo(0, i);
-//         context.lineTo(context.canvas.width, i);
-//         context.stroke();
-//         context.closePath();
-//     }
-//     context.restore();
-// }
-//
-// // Initialization.....................................................
-//
-// drawGrid(context, 'lightgray', 10, 10);
-//
+
+C.drawGrid(0.5,'lightgray',10,10)
+C.drawAxes()

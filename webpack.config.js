@@ -21,6 +21,7 @@ module.exports = { //暴露 的接口
         loaders : [
             {test: /\.scss$/, loader: 'style-loader!css-loader!sass-loader'},
             {test: /\.css$/, loader: 'style-loader!css-loader'},
+            {test: /\.js[x]?$/,loader  : "babel-loader?presets[]=es2015"}
         ]
     },
     plugins: [
