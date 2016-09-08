@@ -10,6 +10,7 @@ var DashboardPlugin = require('webpack-dashboard/plugin');
 var entries = {
     'basic' : './src/basic.js',
     'canvas': './canvas/canvasProject.js',
+    'particle':"./particle/particle.js",
 }
 
 module.exports = { //暴露 的接口
