@@ -1,3 +1,5 @@
+// require("./basicLib")
+
 let canvas = {};
 canvas.obj = document.getElementById("world");
 canvas.ctx = canvas.obj.getContext("2d")
@@ -90,21 +92,125 @@ class Draw {
 }
 
 let D = new Draw();
-
+// 绘画粒子小动画效果
 let img = new Image();
-img.src = "../img/test.png"
-img.onload = ()=>{
-    image.obj = img;
-    image.w = img.width;
-    image.h = img.height;
-    image.x = Number.parseInt(canvas.w/2 - image.w/2);
-    image.y = 50;
-    c.drawImage(image.obj,image.x+500,image.y,image.w,image.h)
+// D.init();
 
-    image.imageData = canvas.ctx.getImageData(image.x,image.y,image.w,image.h)
+window.requestNextAnimationFrame = () =>{
+    return window.requestAnimationFrame ||
+            window.webkitRequestAnimationFrame ||
+            window.mozRequestAnimationFrame ||
+            window.msRequestAnimationFrame
+        // ||
+        //
+        // (callback,element){
+        //
+        //     let start,finsh;
+        //     window.setTimeout(()=>{
+        //         start = +new Date();
+        //         callback(start)
+        //         finsh = +new Date();
+        //         this.timeOut = (1000 / 60) - (finsh - start)
+        //     },this.timeOut)
+        //
+        // }
+
 
 }
 
 
-D.init();
-// D.makeParticle();//这样是异步的，会导致拿不到
+// let stage = new Stage(canvas.obj);
+// rotate3d学习
+class Ball{
+    constructor(data){
+        this.x = data.x;
+        this.y = data.y;
+        this.width = data.width;
+
+
+    }
+    draw(){
+        debugger;
+        c.beginPath();
+        c.arc(0,0,40/2,0,Math.PI * 2,true);
+        c.closePath();
+        c.fillStyle = `rgba(0,0,0,${Math.min(1,40/(2))})`;
+        c.fill();
+    }
+}
+
+
+class Rotate{
+    createBall(radius){
+        radius = (radius === undefined) ? 20: radius;
+        return new Ball({
+            x: 0,
+            y: 0,
+            width: radius * 2,
+            draw(){
+                debugger;
+                c.beginPath();
+                c.arc(0,0,this.width/2,0,Math.PI * 2,true);
+                c.closePath();
+                c.fillStyle = `rgba(0,0,0,${Math.min(1,this.width/(2))})`;
+                c.fill();
+            }
+        })
+    }
+
+    init(){
+        let xpos = 0,
+            ypos = 0,
+            zpos = 0,
+            focalLength = 250,
+            // 焦距
+            ballR = 20,
+            vpx,
+            vpy;
+        let ball = this.createBall(ballR);
+        // ball.draw();
+        // stage.addChild(ball)
+        // 画布中心位置
+        vpx = canvas.obj.width/2;
+        vpy = canvas.obj.height/2;
+        // 取得相对比中心点的位置
+        document.addEventListener("mousemove",(x,y)=>{
+            ypos = y - vpy;
+            xpos = x - vpx;
+            let scale = focalLength/(focalLength + zpos);
+
+            ball.x = vpx + xpos*scale
+            ball.y = vpy + ypos*scale
+
+            ball.width = ballR*2*scale
+        });
+        document.addEventListener("keydown",(e)=>{
+            if(e.keyCode == 38){
+                zpos += 5;
+            }
+            if(e.keyCode == 40){
+                zpos -= 5;
+            }
+        },false);
+        // myAnimate(){
+
+        //
+        //
+        // }
+        debugger
+        window.requestAnimationFrame(
+            ball.draw
+        )
+        // window.requestAnimationFrame(){
+        //     // z对xy的影响比例
+        //
+        //     console.log(scale)
+        // }
+
+        // stage.start();
+    }
+}
+
+let R = new Rotate();
+
+R.init()
