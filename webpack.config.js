@@ -11,7 +11,8 @@ var entries = {
     'basic' : './src/basic.js',
     'canvas': './canvas/canvasProject.js',
     'particle':"./particle/particle.js",
-    "basicLib":"./particle/basicLib.js"
+    "basicLib":"./particle/basicLib.js",
+    "rotate" : "./rotate/rotate.js"
 }
 
 module.exports = { //暴露 的接口
