@@ -58,10 +58,12 @@ class ParticleText{
         let dots = this.dots;
         // 绘制随机点
         dots.forEach((item)=>{
+            //告诉各个粒子现在应该所在的位置
             item.x = Math.random() * canvas.obj.width;
             item.y = Math.random() * canvas.obj.height;
+            // 焦距，利用二维方式模拟三维效果
             item.z = Math.random() * this.focallength * 2 - this.focallength;
-
+            //报存粒子飞散后的位置
             item.tx = Math.random() * canvas.obj.width;
             item.ty = Math.random() * canvas.obj.height;
             item.tz = Math.random() * this.focallength * 2 - this.focallength;
@@ -72,6 +74,7 @@ class ParticleText{
     }
     animate(){
         c.clearRect(0,0,canvas.obj.width,canvas.obj.height);
+        console.log(this.dots.length)
         this.dots.forEach((item)=>{
             // 判断飞散的粒子是否回到了原位
             let flag = Math.abs(item.dx - item.x) < 0.1 && Math.abs(item.dy - item.y) < 0.1 && Math.abs(item.dz - item.z) < 0.1;
@@ -113,16 +116,17 @@ class ParticleText{
             }
             item.print(this.focallength);
         })
+        console.log("1")
         window.requestAnimationFrame(this.animate.bind(this));
     }
     getImgData(text){
         this.drawText(text);
         let imgData = c.getImageData(0,0,canvas.obj.width,canvas.obj.height)
         // 清楚画布，因为要抹去文字，开始粒子化
-        c.clearRect(0,0,canvas.obj.width,canvas.obj.height)
+        // c.clearRect(0,0,canvas.obj.width,canvas.obj.height)
 
         let dots = [];
-        let baseNum =5;
+        let baseNum =3;
         // 在所有的点中，取1/6 之后筛选出符合要求的点
         for( let i = 0;i < imgData.width;i += baseNum){
             for(let j = 0;j < imgData.height; j += baseNum){
