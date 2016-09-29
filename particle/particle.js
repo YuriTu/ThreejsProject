@@ -74,7 +74,7 @@ class ParticleText{
     }
     animate(){
         c.clearRect(0,0,canvas.obj.width,canvas.obj.height);
-        console.log(this.dots.length)
+        // console.log(this.dots.length)
         this.dots.forEach((item)=>{
             // 判断飞散的粒子是否回到了原位
             let flag = Math.abs(item.dx - item.x) < 0.1 && Math.abs(item.dy - item.y) < 0.1 && Math.abs(item.dz - item.z) < 0.1;
@@ -126,7 +126,7 @@ class ParticleText{
         // c.clearRect(0,0,canvas.obj.width,canvas.obj.height)
 
         let dots = [];
-        let baseNum =3;
+        let baseNum =5;
         // 在所有的点中，取1/6 之后筛选出符合要求的点
         for( let i = 0;i < imgData.width;i += baseNum){
             for(let j = 0;j < imgData.height; j += baseNum){
