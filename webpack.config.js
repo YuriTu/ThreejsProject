@@ -8,12 +8,13 @@ const path = require("path");
 const DashboardPlugin = require("webpack-dashboard/plugin");
 // 入口文件
 const entries = {
-    "basic"    : "./src/basic.js",
-    "canvas"   : "./canvas/canvasProject.js",
-    "particle" : "./particle/particle.js",
-    "basicLib" : "./particle/basicLib.js",
-    "rotate"   : "./rotate/rotate.js",
-    "webGL"    : "./webGL/webGL.js"
+    "basic"         : "./src/basic.js",
+    "canvas"        : "./canvas/canvasProject.js",
+    "particle"      : "./particle/particle.js",
+    "basicLib"      : "./particle/basicLib.js",
+    "rotate"        : "./rotate/rotate.js",
+    "webGL"         : "./webGL/webGL.js",
+    "learningThree" : "./threeProject/learningThree",
 };
 // 暴露 的接口
 module.exports = {
