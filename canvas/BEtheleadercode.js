@@ -3,43 +3,43 @@
  */
 
 
-var ca = document.getElementById('world')
-var c = ca.getContext("2d")
+const ca = document.getElementById("world");
+var c = ca.getContext("2d");
 
-var sides = 5,
+let sides = 5,
     size = 200,
     x = 400,
     y = 400;
 
 window.requestAnimationFrame = function () {
-    return window.requestAnimationFrame       ||
+    return window.requestAnimationFrame ||
         window.webkitRequestAnimationFrame ||
-        window.mozRequestAnimationFrame    ||
+        window.mozRequestAnimationFrame ||
         function (callback) {
-            window.setTimeout(callback,24)//1000/60
-        }
-}
-var init;
-var stats;
+            window.setTimeout(callback, 24);// 1000/60
+        };
+};
+let init;
+let stats;
 init = {
-    init:function () {
+    init: function () {
         stats = new Stats();
-        stats.setMode(0) //0 fps 帧数 1ms毫秒 2mb
+        stats.setMode(0); // 0 fps 帧数 1ms毫秒 2mb
 
-        stats.domElement.style.position
+        stats.domElement.style.position;
 
 
 
     },
-    stars :[],
+    stars: [],
 
-    draw:function () {
+    draw: function () {
         stats.begin();
 
 
     },
     // 用es6的class多方便
-    Star:function () {
+    Star: function () {
         this.x;
         this.y;
         this.radius;
@@ -48,28 +48,28 @@ init = {
         this.draw = function (c) {
             c.save();
             // drawit
-            c.fillStyle = "#fff"
-            c.beginPath()
-            c.arc(this.x,this.y,this.radius,0,Math.PI * 2,false);
-            c.closePath()
-            c.fill()//填充
+            c.fillStyle = "#fff";
+            c.beginPath();
+            c.arc(this.x, this.y, this.radius, 0, Math.PI * 2, false);
+            c.closePath();
+            c.fill();// 填充
             // 上色
-            c.restore()
-        }
+            c.restore();
+        };
     }
 
-}
+};
 
 
 function generateStars() {
-    for (var i = 0;i < 50;i++){
+    for (let i = 0;i < 50;i++){
 
     }
 }
 
-if(ca.getContext){
-    var c = ca.getContext("2d")
-    c.beginPath()
+if (ca.getContext){
+    var c = ca.getContext("2d");
+    c.beginPath();
 
 
     // c.moveTo(x + size * Math.sin(0),y + size * Math.cos(0))
