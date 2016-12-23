@@ -14,5 +14,28 @@ _.pythagoras = (side1,side2,hypotenuse) => {
     return  rs;
 }
 
+_.raf = (callback) => {
+     window.ranf =  window.requestAnimationFrame ||
+        window.webkitRequestAnimationFrame ||
+        window.mozRequestAnimationFrame ||
+        window.oRequestAnimationFrame ||
+        window.msRequestAnimationFrame ||
+
+        function (callback) {
+            let start,
+                finish;
+            const self = {};
+            window.setTimeout(() => {
+                start = +new Date();
+                callback(start);
+                finish = +new Date();
+
+                self.timeout = 1000 / 60 - (finish - start);
+
+            }, self.timeout);
+        };
+    return window.ranf(callback);
+};
+
 module.exports = _;
 

@@ -17,9 +17,13 @@ grid.draw("lightgray", 10, 10);
 // const newClock = new Clock(canvas);
 // newClock.draw();
 
-const Polygon = require("./chapter2/drawPolygon");
-const pol = new Polygon(canvas);
-pol.init();
+// const Polygon = require("./chapter2/drawPolygon");
+// const pol = new Polygon(canvas);
+// pol.init();
+
+const Clip = require("./chapter2/clipAn");
+const clip = new Clip(canvas);
+clip.init();
 
 
 
