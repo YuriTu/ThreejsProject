@@ -41,7 +41,7 @@ class SrollBack {
     }
 
     init(){
-        this.sky.src = "../../img/img1.jpg";
+        this.sky.src = "../../img/test.png";
         this.sky.onload = () => {
             this.draw();
         }
