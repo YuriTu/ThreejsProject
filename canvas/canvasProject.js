@@ -21,9 +21,13 @@ grid.draw("lightgray", 10, 10);
 // const pol = new Polygon(canvas);
 // pol.init();
 
-const Clip = require("./chapter2/clipAn");
-const clip = new Clip(canvas);
-clip.init();
+// const Clip = require("./chapter2/clipAn");
+// const clip = new Clip(canvas);
+// clip.init();
+
+const Scroll = require("./chapter5/srollBack");
+const scroll = new Scroll(canvas);
+scroll.init();
 
 
 
