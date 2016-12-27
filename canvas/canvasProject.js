@@ -7,7 +7,7 @@ canvas.ctx = canvas.obj.getContext("2d");
 const pi = Math.PI;
 
 const Stats = require("./common/Stats");
-const stats = new Stats()
+const stats = new Stats();
 stats.init();
 
 const Grid = require("./common/drawGrid");

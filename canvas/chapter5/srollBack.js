@@ -21,7 +21,6 @@ class SrollBack {
         c.drawImage(this.sky,0,0);
         c.drawImage(this.sky,this.canvas.width,0);
         c.restore();
-
     }
     calculateFps(now) {
         const fps = 1000 / (now - this.lastTime);
