@@ -1,6 +1,7 @@
 /**
  * Created by renren on 16/6/24.
  */
+
 const canvas = {};
 canvas.obj = document.getElementById("world");
 canvas.ctx = canvas.obj.getContext("2d");
