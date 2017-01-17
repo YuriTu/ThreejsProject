@@ -10,9 +10,7 @@ const DashboardPlugin = require("webpack-dashboard/plugin");
 const entries = {
     "basic"         : "./src/basic.js",
     "canvas"        : "./canvas/canvasProject.js",
-    "particle"      : "./particle/particle.js",
-    "basicLib"      : "./particle/basicLib.js",
-    "rotate"        : "./rotate/rotate.js",
+    // "basicLib"      : "./particle/basicLib.js",
     "webGL"         : "./webGL/webGL.js",
     "learningThree" : "./threeProject/learningThree",
 };

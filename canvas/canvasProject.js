@@ -15,6 +15,10 @@ const Grid = require("./common/drawGrid");
 const grid = new Grid(canvas);
 grid.draw("lightgray", 10, 10);
 
+const Drawimg = require("./chapter4/drawImg");
+const draw = new Drawimg(canvas);
+draw.init();
+
 // const Clock = require("./chapter2/clock");
 // const newClock = new Clock(canvas);
 // newClock.draw();
