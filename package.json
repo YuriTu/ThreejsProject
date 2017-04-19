@@ -3,7 +3,9 @@
   "version": "1.0.0",
   "description": "practise for canvas",
   "main": "webpack.config.js",
-  "dependencies": {},
+  "dependencies": {
+    "pixi.js": "^4.5.0"
+  },
   "devDependencies": {
     "babel": "^6.5.2",
     "babel-core": "^6.14.0",

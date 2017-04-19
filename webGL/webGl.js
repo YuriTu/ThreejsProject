@@ -1,6 +1,14 @@
-const canvas = {};
+const PIXI = require("pixi.js")
 
-canvas.obj = document.getElementById("world");
-canvas.ctx = canvas.obj.getContext("2d");
-const c = canvas.obj.getContext("2d");
+let render =    PIXI.autoDetectRenderer(265,265);
+
+document.body.appendChild(render.view)
+render.view.style.border = "1px dashed black";
+render.backgroundColor = "#999999";
+
+render.autoResize = true;
+render.resize(window.innerWidth,window.innerHeight)
+let stage = new PIXI.Container();
+
+render.render(stage);
 
