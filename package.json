@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "description": "practise for canvas",
   "main": "webpack.config.js",
-  "dependencies": {//开发 与 发版 都需要的
+  "dependencies": {
     "pixi.js": "^4.5.0",
     "babel": "^6.5.2",
     "babel-core": "^6.14.0",
@@ -16,7 +16,7 @@
     "style-loader": "^0.13.1",
     "three": "^0.78.0"
   },
-  "devDependencies": {// 仅开发需要  peer版本兼容性  optional 可选择
+  "devDependencies": {
     "eslint": "^3.6.1",
     "http-server": "^0.9.0",
     "webpack": "^1.13.2",
