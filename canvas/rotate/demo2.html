@@ -44,7 +44,9 @@
         vpy = canvas.height/2;
 
         stage.addEventListener('mousemove', function (x, y) {
+
             angleY = (x - vpx) * .001;
+            console.log(x,vpx,angleY)
         });
 
         function rotateY(ball, angleY) {
@@ -54,12 +56,11 @@
                 z1 = ball.zpos * cosy + ball.xpos * siny;
             ball.xpos = x1;
             ball.zpos = z1;
-
+            console.log(ball.zpos)
             var scale = focalLength / (focalLength + ball.zpos);
             ball.x = vpx + ball.xpos * scale;
             ball.y = vpy + ball.ypos * scale;
             ball.width = ballR*2*scale;
-            console.log(scale)
         }
 
         stage.onRefresh = function () {

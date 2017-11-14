@@ -37,7 +37,7 @@ class Rotate {
             radius:20,
         }
         this.ballR = 25;
-        this.ballN = 1;
+        this.ballN = 10;
         this.ballS = [];
         this.cenx = null;
         this.ceny = null;
@@ -47,7 +47,8 @@ class Rotate {
         this.xpos = 0;
         this.focalLength = 250;
         // 旋转量
-        this.angle = 0;
+        this.angleY = 0;
+        this.angleX = 0;
     }
     createBall(radius){
         let r = (radius === undefined)?this.default.radius:radius;
@@ -72,9 +73,12 @@ class Rotate {
 
         document.querySelector('#world').addEventListener('mousemove',(e) => {
 
-            let x = e.screenX - 10;
-            let y = e.screenY - 10;
-            this.angle = (x - this.cenx) * .001;
+            let x = e.screenX;
+            let y = e.screenY;
+            this.angleY = (x - this.cenx) * .001;
+            this.angleX = (y - this.cenx) * .001;
+            console.log(x,this.cenx,this.angleY)
+
 
         })
         _.raf(this.animate.bind(this));
@@ -83,27 +87,45 @@ class Rotate {
     animate(){
         ctx.clearRect(0,0,canvas.obj.width,canvas.obj.height)
         this.ballS.forEach(item => {
-            this.rotate(item);
+            this.rotateX(item);
+            this.rotateY(item);
+            this.render(item);
             item.draw(ctx);
         })
         _.raf(this.animate.bind(this))
 
     }
-    rotate(ball){
-        let cosy = Math.cos(this.angle);
-        let siny = Math.sin(this.angle);
-        let x = ball.xpos * cosy - ball.zpos * siny;
+    rotateX(ball){
+        let sinx = Math.sin(this.angleX);
+        let cosx = Math.cos(this.angleX);
+
+        let yx = ball.ypos * cosx - ball.zpos * sinx;
+        let zx = ball.ypos * sinx + ball.zpos * cosx;
+
+
+        ball.zpos = zx;
+        ball.ypos = yx;
+    }
+    rotateY(ball){
+
+        let cosy = Math.cos(this.angleY);
+        let siny = Math.sin(this.angleY);
+
+        let x = ball.xpos * cosy + ball.zpos * siny;
+        let z = ball.zpos * cosy - ball.xpos * siny;
+
         ball.xpos = x;
-        let z = ball.zpos * cosy + ball.xpos * siny;
         ball.zpos = z;
+    }
+    render(ball){
 
         let scale = this.focalLength / (this.focalLength  + ball.zpos);
         ball.x = this.cenx + ball.xpos * scale;
         ball.y = this.ceny + ball.ypos * scale;
         ball.radius = this.ballR*scale;
-        console.log(cosy,ball.zpos, ball.xpos,siny)
+        // console.log(cosy,ball.zpos, ball.xpos,siny)
 
-        document.getElementById('scale').innerHTML = `${scale}---angle:${this.angle}`;
+        document.getElementById('scale').innerHTML = `${scale}---angle:${this.angleY}`;
     }
 }
 

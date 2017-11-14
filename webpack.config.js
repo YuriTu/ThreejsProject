@@ -8,6 +8,7 @@ const entries = {
     "basic"         : "./src/basic.js",
     "canvas"        : "./canvas/canvasProject.js",
     "rotate"      : "./canvas/rotate/rotate.js",
+    'particle'     : "./canvas/particle/particle.js",
     "webGL"         : "./webGL/webGL.js",
     "learningThree" : "./threeProject/learningThree",
 
