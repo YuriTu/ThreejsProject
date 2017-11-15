@@ -9,7 +9,6 @@ _.pythagoras = (side1,side2,hypotenuse) => {
         const s1 = +side1 || 0;
         const s2 = +side1 || 0;
         rs = Math.sqrt(  Math.pow(+hypotenuse,2) - Math.pow(s1,2) - Math.pow(s2,2)  );
-
     }
     return  rs;
 }

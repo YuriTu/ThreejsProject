@@ -5,7 +5,7 @@ const path = require("path");
 const DashboardPlugin = require("webpack-dashboard/plugin");
 // 入口文件
 const entries = {
-    "basic"         : "./src/basic.js",
+    "basic"         : "./src/main.js",
     "canvas"        : "./canvas/canvasProject.js",
     "rotate"      : "./canvas/rotate/rotate.js",
     'particle'     : "./canvas/particle/particle.js",
