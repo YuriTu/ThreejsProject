@@ -6,6 +6,7 @@
 <style>
 html {
   height: 100%;
+  /*加了中部上部的椭圆渐变*/
   background-image: -webkit-radial-gradient(ellipse farthest-corner at center top, #000d4d 0%, #000105 100%);
   background-image: radial-gradient(ellipse farthest-corner at center top, #000d4d 0%, #000105 100%);
   cursor: move;
@@ -70,17 +71,19 @@ var max = 100;
 var _x = 0;
 var _y = 0;
 var _z = 150;
+//角度 -> 弧度
+//angle ->  rad
 var dtr = function(d) {
   return d * Math.PI / 180;
 };
-
+//随机 整个圆的一个角的sin
 var rnd = function() {
   return Math.sin(Math.floor(Math.random() * 360) * Math.PI / 180);
 };
 var dist = function(p1, p2, p3) {
   return Math.sqrt(Math.pow(p2.x - p1.x, 2) + Math.pow(p2.y - p1.y, 2) + Math.pow(p2.z - p1.z, 2));
 };
-
+//摄像机 ?
 var cam = {
   obj: {
     x: _x,
@@ -216,6 +219,7 @@ var trans = {
 
 (function() {
   "use strict";
+//  基本粒子类
   var threeD = function(param) {
     this.transIn = {};
     this.transOut = {};
@@ -235,7 +239,7 @@ var trans = {
       cam.disp
     );
   };
-
+//  静态类
   var Build = function() {
     this.vel = 0.04;
     this.lim = 360;
@@ -252,6 +256,7 @@ var trans = {
     this.canvas.height = window.innerHeight;
     this.$ = canv.getContext("2d");
     this.$.globalCompositeOperation = 'source-over';
+//    粒子存放list
     this.varr = [];
     this.dist = [];
     this.calc = [];
@@ -273,6 +278,7 @@ var trans = {
   };
 
   Build.prototype.add = function() {
+//    加入新的粒子
     this.varr.push(new threeD({
       vtx: {
         x: rnd(),
@@ -313,24 +319,30 @@ var trans = {
     this.rotObj.x += 0.1;
     this.rotObj.y += 0.1;
     this.rotObj.z += 0.1;
-
+//    循环整个粒子list
     for (var i = 0; i < this.varr.length; i++) {
+
       for (var val in this.calc[i]) {
         if (this.calc[i].hasOwnProperty(val)) {
           this.calc[i][val] += this.vel;
           if (this.calc[i][val] > this.lim) this.calc[i][val] = 0;
         }
       }
-
+//       进入位置
       this.varr[i].transIn.pos = {
         x: this.diff * Math.cos(this.calc[i].x * Math.PI / 180),
         y: this.diff * Math.sin(this.calc[i].y * Math.PI / 180),
         z: this.diff * Math.sin(this.calc[i].z * Math.PI / 180)
       };
+//      进入角度
       this.varr[i].transIn.rot = this.rotObj;
+//      进入size
       this.varr[i].transIn.sz = this.objSz;
       this.varr[i].vupd();
+
       if (this.varr[i].transOut.p < 0) continue;
+
+//      粒子颜色的线性渐变
       var g = this.$.createRadialGradient(this.varr[i].transOut.x, this.varr[i].transOut.y, this.varr[i].transOut.p, this.varr[i].transOut.x, this.varr[i].transOut.y, this.varr[i].transOut.p * 2);
       this.$.globalCompositeOperation = 'lighter';
       g.addColorStop(0, 'hsla(255, 255%, 255%, 1)');
@@ -344,23 +356,29 @@ var trans = {
     }
   };
   Build.prototype.anim = function() {
+//      raf兼容
     window.requestAnimationFrame = (function() {
       return window.requestAnimationFrame ||
         function(callback, element) {
           window.setTimeout(callback, 1000 / 60);
         };
     })();
+
     var anim = function() {
+//       更新数据 xy值
       this.upd();
+//  擦除画布  绘制
       this.draw();
       window.requestAnimationFrame(anim);
     }.bind(this);
+
     window.requestAnimationFrame(anim);
   };
-
+//  动画主逻辑
   Build.prototype.run = function() {
+//      动画函数
     this.anim();
-
+    //移动距离换算
     window.addEventListener('mousemove', function(e) {
       this.toX = (e.clientX - this.canvas.width / 2) * -0.8;
       this.toY = (e.clientY - this.canvas.height / 2) * 0.8;
@@ -370,6 +388,8 @@ var trans = {
       this.toX = (e.touches[0].clientX - this.canvas.width / 2) * -0.8;
       this.toY = (e.touches[0].clientY - this.canvas.height / 2) * 0.8;
     }.bind(this));
+
+
     window.addEventListener('mousedown', function(e) {
       for (var i = 0; i < 100; i++) {
         this.add();
@@ -385,6 +405,7 @@ var trans = {
   var app = new Build();
   app.run();
 })();
+//resize
 window.addEventListener('resize', function() {
   canvas.width = w = window.innerWidth;
   canvas.height = h = window.innerHeight;

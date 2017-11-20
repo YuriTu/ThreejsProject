@@ -1,11 +1,6 @@
-import config from './config/config';
+import {basic,bgParticle} from './config/config';
 import _ from '../until/until';
 import Animator from './animator';
-
-// let canvas = {};
-// canvas.obj = document.getElementById('world');
-// canvas.ctx = canvas.obj.getContext('2d');
-// let ctx = canvas.ctx;
 
 let animator,
 // 动画当前动作的上一个动作的执行时间
@@ -17,17 +12,19 @@ class Main {
         this.init = () => {
             this.clear();
             this.initCanvas();
+            this.initAnimator();
 
         }
         this.clear = () => {
 
         }
         this.initCanvas = () => {
+            let ele = document.getElementById('canvas');
             this.canvas = {
-                obj:document.getElementById('world'),
-                width:window.innerWidth,
-                height:window.innerHeight,
-                ctx: document.getElementById('world').getContext("2d"),
+                obj:ele,
+                width:window.innerWidth - 20,
+                height:window.innerHeight -30,
+                ctx: ele.getContext('2d'),
                 allow:false
             }
             this.canvas.obj.width = this.canvas.width;
@@ -45,7 +42,7 @@ class Main {
         this.baseOnTime = (time) => {
             const curTime = +new Date();
             const passTime = curTime - actionLastTime;
-            if (config.basicConfig.baseOnTime){
+            if (basic.baseOnTime){
                 if (passTime > time){
                     actionLastTime = curTime;
                     return passTime;
@@ -59,7 +56,7 @@ class Main {
     animate(){
         if(!this.canvas.allow)return;
 
-        if(this.baseOnTime( (1000 / config.basic.fps) )){
+        if(this.baseOnTime( (1000 / basic.fps) )){
             animator.draw();
         }
         _.raf(this.animate.bind(this))
@@ -68,3 +65,4 @@ class Main {
 
 let m = new Main();
 m.init();
+m.start();

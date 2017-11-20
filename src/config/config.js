@@ -5,12 +5,26 @@
 const pi = Math.PI;
 const piStep = 0.02 * pi;
 
+const BG = "#2543aa"
+const WHITE = "#FFF"
 const basic = {
     baseOnTime:true,
     // 默认25毫秒一帧FPS:40
     fps      : 40,
+    focalLength:250,
+    // 旋转系数
+    // path2angle:.001 * piStep,
+    path2angle:.001,
+    // bgStart:BG,
+    // bgEnd:WHITE,
+}
+const bgParticle = {
+    radius:25,
+    count:20,
 }
 
-export default {
+
+export {
     basic,
+    bgParticle
 }
