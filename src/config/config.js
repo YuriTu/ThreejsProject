@@ -13,14 +13,15 @@ const basic = {
     fps      : 40,
     focalLength:250,
     // 旋转系数
-    // path2angle:.001 * piStep,
-    path2angle:.001,
+    path2angle:.001 * piStep,
+
     // bgStart:BG,
     // bgEnd:WHITE,
 }
 const bgParticle = {
     radius:25,
-    count:20,
+    count:100,
+    spare:40,
 }
 
 
