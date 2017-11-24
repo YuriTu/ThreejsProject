@@ -11,6 +11,7 @@ const entries = {
     'particle'     : "./canvas/particle/particle.js",
     "webGL"         : "./webGL/webGL.js",
     "learningThree" : "./threeProject/learningThree",
+    "line"          : "./canvas/lightline/app"
 
 };
 module.exports = {

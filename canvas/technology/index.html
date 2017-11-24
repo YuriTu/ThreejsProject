@@ -86,6 +86,7 @@ dieY = h / 2 / opts.len,
 baseRad = Math.PI * 2 / 6; //120度角，就是六边形的角度
 ctx.fillStyle = 'black';//背景颜色
 ctx.fillRect(0, 0, w, h);//绘制背景
+
 function loop() {
 	window.requestAnimationFrame(loop); ++tick;
 	ctx.globalCompositeOperation = 'source-over';//绘制的覆盖方式
@@ -112,6 +113,7 @@ Line.prototype.reset = function() {
     this.addedX = 0;//递增距离
     this.addedY = 0;
     this.rad = 0;//初始角度
+//    颜色系数
 	this.lightInputMultiplier = opts.baseLightInputMultiplier + opts.addedLightInputMultiplier * Math.random();
     //替换掉颜色中hue占位符，使用  记号*变化系数
 	this.color = opts.color.replace('hue', tick * opts.hueChange);
@@ -125,7 +127,7 @@ Line.prototype.beginPhase = function() {
 	this.x += this.addedX;//位置 = 原先的位置+递增的距离
 	this.y += this.addedY;
 	this.time = 0;
-    // 目标时间 = 基础时间 + 递增的时间*随机数
+    // 目标消失时间 = 基础时间 + 递增的时间*随机数
 
 
 	this.targetTime = (opts.baseTime + opts.addedTime * Math.random());
