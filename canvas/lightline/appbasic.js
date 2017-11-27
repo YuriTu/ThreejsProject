@@ -19,14 +19,6 @@ const opts = {
     }
 }
 
-let timeTick = 500;
-const createColor = (alpha = 1) => {
-    let value = timeTick.toString(16)
-    let hex = `#${value.padStart(6, '0')}`
-    return _.hexToRgba(hex,alpha).toString();
-}
-
-
 class Line {
     constructor(){
         this.init();
@@ -38,10 +30,9 @@ class Line {
         this.xpos = 0;
         this.ypos = 0;
         this.rad = 0;
-        // this.color = createColor();
-        this.color = '#0000dd'
+        this.color = '#ff0000';
         this.aliveTime = 0;
-        console.log(this.color)
+        this.killTime = 0;
     }
     start() {
         this.x = this.x + this.xpos;
@@ -63,7 +54,7 @@ class Line {
         let pathRat = this.aliveTime / this.killTime;
         // let lineLength =
 
-        // ctx.fillStyle = this.color = createColor();
+        ctx.fillStyle = this.color;
         // let wave = Math.random()
         // xpos为每次的结果增量
         // xy为过程
@@ -82,9 +73,10 @@ class Main {
     constructor(){
         this.lines = [];
         this.createLine = () => {
-            for (let i = 0;i< 100;i++){
+            for (let i = 0;i< 300;i++){
                 this.lines.push( new Line())
             }
+
         }
     }
     start(){
@@ -97,16 +89,11 @@ class Main {
     }
 
     animate(){
-        timeTick += 100;
         ctx.globalCompositeOperation = 'source-over';
-        ctx.shadowBlur = 0;
-        ctx.fillStyle = 'rgba(0,0,0,0.4)';
+        ctx.fillStyle = 'rgba(0,0,0,0.2)';
         ctx.fillRect(0,0,canvas.width,canvas.height);
 
         ctx.globalCompositeOperation = 'lighter';
-        //TODO 数字递增会造成闪烁
-        ctx.fillStyle = createColor();
-        console.log(ctx.fillStyle)
         this.lines.forEach(item => {
             item.draw(ctx);
         })

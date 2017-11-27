@@ -16,15 +16,21 @@ const opts = {
     center:{
         x:canvas.width /2,
         y:canvas.height /2
-    }
+    },
+    color:'hsl(0,100%,100%)',
+    dieRat:0.05,
 }
 
+const getHSL = (hue = 0,light = 100) => {
+    return `hsl(${hue},100%,${light}%)`
+};
+
 let timeTick = 500;
-const createColor = (alpha = 1) => {
-    let value = timeTick.toString(16)
-    let hex = `#${value.padStart(6, '0')}`
-    return _.hexToRgba(hex,alpha).toString();
-}
+// const createColor = (alpha = 1) => {
+//     let value = timeTick.toString(16)
+//     let hex = `#${value.padStart(6, '0')}`
+//     return _.hexToRgba(hex,alpha).toString();
+// }
 
 
 class Line {
@@ -39,7 +45,7 @@ class Line {
         this.ypos = 0;
         this.rad = 0;
         // this.color = createColor();
-        this.color = '#0000dd'
+        this.color = getHSL(timeTick * 0.1)
         this.aliveTime = 0;
         console.log(this.color)
     }
@@ -53,6 +59,10 @@ class Line {
         this.rad = this.rad + opts.baseRad * (Math.random() < 0.5 ? -1 : 1);
         this.xpos = Math.cos(this.rad);
         this.ypos = Math.sin(this.rad);
+        
+        if(Math.random() < opts.dieRat
+         || Math.abs(this.x) >     
+        )
     };
     draw(ctx) {
         this.aliveTime++;
