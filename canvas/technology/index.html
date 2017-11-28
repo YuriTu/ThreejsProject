@@ -158,6 +158,8 @@ Line.prototype.step = function() {
 	ctx.shadowBlur = prop * opts.shadowToTimePropMult;//绘制是的阴影模糊
     //填充颜色和阴影颜色
     //绘制线条中点的x.y坐标，因为拖尾巴的缘故，显示的是线条
+//   亮度 =  /基础亮度，用在颜色的占位符中 + 亮度增加max （* math.sin(经过的时间 * 亮度系数) ） 这就是个0-1的值，没必要这么麻烦
+//       亮度系数 =  基础亮度系数 + 增量 * random
 	ctx.fillStyle = ctx.shadowColor = this.color.replace('light', opts.baseLight + opts.addedLight * Math.sin(this.cumulativeTime * this.lightInputMultiplier));
     //点的大小
     //绘制闪烁点
@@ -166,7 +168,9 @@ Line.prototype.step = function() {
 		opts.cy + (this.y + y) * opts.len,
 		2, 2);
 	if (Math.random() < opts.sparkChance){
-        ctx.fillRect(opts.cx + (this.x + x) * opts.len + Math.random() * opts.sparkDist * (Math.random() < .5 ? 1 : -1) - opts.sparkSize / 2,
+        ctx.fillRect(
+//            中央坐标 + （目前线条位置 + 增量） * 线条长度  + 【0 -1 】闪烁距离 * 【-1 1】 - 一半的闪烁
+            opts.cx + (this.x + x) * opts.len + Math.random() * opts.sparkDist * (Math.random() < .5 ? 1 : -1) - opts.sparkSize / 2,
 			opts.cy + (this.y + y) * opts.len + Math.random() * opts.sparkDist * (Math.random() < .5 ? 1 : -1) - opts.sparkSize / 2,
 			opts.sparkSize,
 			opts.sparkSize)

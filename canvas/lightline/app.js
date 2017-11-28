@@ -27,6 +27,10 @@ const opts = {
     hueChange:0.1,
     maxShadowBlur:6,
     maxLight:50,
+
+    pointRat:.01,
+    pointLength:10,
+    pointSize:2,
 }
 
 const getHSL = (hue = 0,light = 100) => {
@@ -34,12 +38,6 @@ const getHSL = (hue = 0,light = 100) => {
 };
 
 let timeTick = 0;
-// const createColor = (alpha = 1) => {
-//     let value = timeTick.toString(16)
-//     let hex = `#${value.padStart(6, '0')}`
-//     return _.hexToRgba(hex,alpha).toString();
-// }
-
 
 class Line {
     constructor(){
@@ -96,6 +94,14 @@ class Line {
             opts.center.y + (this.y + y) * opts.length,
             2, 2
         );
+        // 绘制闪烁点
+        if(Math.random() < opts.pointRat){
+            ctx.fillRect(
+                opts.center.x + (this.x + x) * opts.length + (opts.pointLength * (Math.random() < .5?1:-1) - (opts.pointLength* Math.random())),
+                opts.center.y + (this.y + y) * opts.length + (opts.pointLength * (Math.random() < .5?1:-1) - (opts.pointLength * Math.random())),
+                opts.pointSize, opts.pointSize
+            )
+        }
     }
 }
 
@@ -128,7 +134,7 @@ class Main {
         ctx.globalCompositeOperation = 'lighter';
         //TODO 数字递增会造成闪烁
         // ctx.fillStyle = createColor();
-        // console.log( getHSL(timeTick * opts.hueChange,50))
+
         if(this.lines.length < opts.linesCount && Math.random() < opts.createRat){
             this.lines.push(new Line());
         }
