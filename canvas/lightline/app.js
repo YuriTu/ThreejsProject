@@ -5,39 +5,21 @@ import {bgParticle} from "../../src/config/config";
 
 const canvas = {}
 canvas.obj = document.querySelector('#world');
-canvas.width = canvas.obj.width
-canvas.height = canvas.obj.height
+canvas.width = canvas.obj.width = window.innerWidth
+canvas.height = canvas.obj.height = window.innerHeight
 const ctx = canvas.obj.ctx = canvas.obj.getContext('2d');
 
 const opts = {
     length:20,
-    linesCount:100,
-    createRat:0.8,
     baseAliveTime:10,
     baseRad: Math.PI * 2 / 6,
-    backAlpha:.04,
     center:{
         x:canvas.width /2,
         y:canvas.height /2
-    },
-    color:'hsl(0,100%,100%)',
-    dieRat:0.05,
-    dieX:canvas.width / 2,
-    dieY:canvas.height / 2,
-    hueChange:0.1,
-    maxShadowBlur:6,
-    maxLight:50,
-
-    pointRat:.01,
-    pointLength:10,
-    pointSize:2,
+    }
 }
 
-const getHSL = (hue = 0,light = 100) => {
-    return `hsl(${hue},100%,${light}%)`
-};
-
-let timeTick = 0;
+let start = 0;
 
 class Line {
     constructor(){
@@ -50,10 +32,9 @@ class Line {
         this.xpos = 0;
         this.ypos = 0;
         this.rad = 0;
-        // this.color = createColor();
-        this.color = getHSL(timeTick * opts.hueChange,50)
+        this.color = '#ff0000';
         this.aliveTime = 0;
-
+        this.killTime = 0;
     }
     start() {
         this.x = this.x + this.xpos;
@@ -65,25 +46,17 @@ class Line {
         this.rad = this.rad + opts.baseRad * (Math.random() < 0.5 ? -1 : 1);
         this.xpos = Math.cos(this.rad);
         this.ypos = Math.sin(this.rad);
-
-        if(Math.random() < opts.dieRat
-         || Math.abs(this.x) > opts.dieX
-         || Math.abs(this.y) > opts.dieY
-        ) this.init();
     };
     draw(ctx) {
         this.aliveTime++;
+        // console.log(this.aliveTime,this.killTime)
         if(this.aliveTime >= this.killTime) this.start();
 
         // 路径进度
         let pathRat = this.aliveTime / this.killTime;
+        // let lineLength =
 
-        ctx.fillStyle =this.color
-        // console.log(this.color)
-        ctx.shadowBlur = opts.maxShadowBlur * pathRat;
-        // 替换亮度
-        ctx.shadowColor =this.color.replace(/\d+%\)$/,`${opts.maxLight * pathRat}%)`)
-        // console.log(this.color)
+        ctx.fillStyle = this.color;
         // let wave = Math.random()
         // xpos为每次的结果增量
         // xy为过程
@@ -94,14 +67,6 @@ class Line {
             opts.center.y + (this.y + y) * opts.length,
             2, 2
         );
-        // 绘制闪烁点
-        if(Math.random() < opts.pointRat){
-            ctx.fillRect(
-                opts.center.x + (this.x + x) * opts.length + (opts.pointLength * (Math.random() < .5?1:-1) - (opts.pointLength* Math.random())),
-                opts.center.y + (this.y + y) * opts.length + (opts.pointLength * (Math.random() < .5?1:-1) - (opts.pointLength * Math.random())),
-                opts.pointSize, opts.pointSize
-            )
-        }
     }
 }
 
@@ -110,37 +75,36 @@ class Main {
     constructor(){
         this.lines = [];
         this.createLine = () => {
-            for (let i = 0;i< 100;i++){
+            for (let i = 0;i< 5000;i++){
                 this.lines.push( new Line())
             }
+
         }
     }
     start(){
-        // ctx.fillStyle = 'rgba(0,0,0,0.4)';
+        ctx.fillStyle = 'rgba(0,0,0,0.4)';
         ctx.save();
 
-        // this.createLine();
+        this.createLine();
         this.animate();
+        alert(navigator.appVersion)
 
     }
 
     animate(){
-        timeTick++;
         ctx.globalCompositeOperation = 'source-over';
-        ctx.shadowBlur = 0;
-        ctx.fillStyle = `rgba(0,0,0,${opts.backAlpha})`;
+        ctx.fillStyle = 'rgba(0,0,0,0.2)';
         ctx.fillRect(0,0,canvas.width,canvas.height);
 
         ctx.globalCompositeOperation = 'lighter';
-        //TODO 数字递增会造成闪烁
-        // ctx.fillStyle = createColor();
-
-        if(this.lines.length < opts.linesCount && Math.random() < opts.createRat){
-            this.lines.push(new Line());
-        }
         this.lines.forEach(item => {
             item.draw(ctx);
         })
+
+        let now = window.performance.now();
+        document.querySelector('#Stats-output').innerHTML = 'fps:'+ parseInt(1000/ (now - start))
+        start = now;
+
         _.raf(this.animate.bind(this));
     }
 
