@@ -54,7 +54,7 @@ class ParticleText{
 
 	init(){
 		// 取得文字信息
-		this.dots = this.getImgData("人人FED");
+		this.dots = this.getImgData("百度HI");
 		const dots = this.dots;
 		// 绘制随机点
 		dots.forEach((item) => {

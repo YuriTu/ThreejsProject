@@ -1,3 +1,0 @@
-const basicMesh =  require("./basicMesh");
-
-

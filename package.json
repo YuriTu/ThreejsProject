@@ -3,6 +3,9 @@
   "version": "1.0.0",
   "description": "practise for canvas",
   "main": "webpack.config.js",
+  "scripts": {
+    "dev": "webpack-dev-server --hot"
+  },
   "dependencies": {
     "babel-core": "^6.26.0",
     "babel-loader": "^7.1.2",
@@ -21,9 +24,6 @@
     "webpack": "^3.9.1",
     "webpack-dashboard": "^1.0.2",
     "webpack-dev-server": "^2.9.5"
-  },
-  "scripts": {
-    "dev": "webpack-dashboard -- webpack-dev-server --hot --inline --progress --color --host 0.0.0.0 --port 9888"
   },
   "repository": {
     "type": "git",

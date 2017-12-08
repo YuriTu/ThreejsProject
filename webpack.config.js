@@ -13,7 +13,7 @@ const entries = {
     "rotate"      : "./canvas/rotate/rotate.js",
     'particle'     : "./canvas/particle/particle.js",
     "webGL"         : "./webGL/webGL.js",
-    "learningThree" : "./threeProject/learningThree",
+    "threejs"       : "./threeProject/main",
     "line"          : "./canvas/lightline/app"
 
 };
@@ -21,8 +21,8 @@ module.exports = {
     entry  : entries,
     output : {
         filename   : "[name].bundle.js",
-        path       : path.resolve(__dirname, "dist/js/"),
-        publicPath : "http://localhost:9888/dist/js/"
+        path       : path.resolve(__dirname, "js/"),
+        publicPath : "http://localhost:9889/js/"
     },
     module: {
         noParse: /jquery/,
@@ -50,7 +50,7 @@ module.exports = {
                 use: {
                     loader: 'babel-loader',
                     options: {
-                        presets: ['babel-preset-env','stage-0'],
+                        presets: ['babel-preset-env'],
                         plugins: ['transform-runtime']
                     }
                 }
@@ -83,7 +83,7 @@ module.exports = {
     devServer: {
         hot    : true,
         inline : true,
-        port:9001,
+        port:9889,
         proxy  : {
             "/api/*": {
                 target       : "http://develop.com",
@@ -93,11 +93,11 @@ module.exports = {
                 }
             }
         },
-        headers: {
-            "Access-Control-Allow-Origin"  : "*",
-            "Access-Control-Allow-Methods" : "GET, POST, PUT, DELETE, PATCH, OPTIONS",
-            "Access-Control-Allow-Headers" : "X-Requested-With, content-type, Authorization"
-        }
+        // headers: {
+        //     "Access-Control-Allow-Origin"  : "*",
+        //     "Access-Control-Allow-Methods" : "GET, POST, PUT, DELETE, PATCH, OPTIONS",
+        //     "Access-Control-Allow-Headers" : "X-Requested-With, content-type, Authorization"
+        // }
     }
 
 };
