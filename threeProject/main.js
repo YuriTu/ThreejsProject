@@ -10,7 +10,7 @@ let SCREEN_WIDTH = window.innerWidth,
     windowHalfY = window.innerHeight / 2,
     camera, scene, renderer;
 
-const COUNT = 1000;
+const COUNT = 30000;
 
 
 

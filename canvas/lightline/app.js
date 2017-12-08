@@ -2,7 +2,8 @@
 
 import _ from '../../until/until';
 import {bgParticle} from "../../src/config/config";
-
+import Status from '../../until/status.min'
+let status = new Status()
 const canvas = {}
 canvas.obj = document.querySelector('#world');
 canvas.width = canvas.obj.width = window.innerWidth
@@ -75,7 +76,7 @@ class Main {
     constructor(){
         this.lines = [];
         this.createLine = () => {
-            for (let i = 0;i< 5000;i++){
+            for (let i = 0;i< 13000;i++){
                 this.lines.push( new Line())
             }
 
@@ -87,11 +88,14 @@ class Main {
 
         this.createLine();
         this.animate();
-        alert(navigator.appVersion)
+        console.log(navigator.appVersion)
+        status.showPanel(0);
+        document.body.appendChild(status.dom);
 
     }
 
     animate(){
+        status.begin();
         ctx.globalCompositeOperation = 'source-over';
         ctx.fillStyle = 'rgba(0,0,0,0.2)';
         ctx.fillRect(0,0,canvas.width,canvas.height);
@@ -101,11 +105,12 @@ class Main {
             item.draw(ctx);
         })
 
-        let now = window.performance.now();
-        document.querySelector('#Stats-output').innerHTML = 'fps:'+ parseInt(1000/ (now - start))
-        start = now;
+        // let now = window.performance.now();
+        // document.querySelector('#Stats-output').innerHTML = 'fps:'+ parseInt(1000/ (now - start))
+        // start = now;
 
         _.raf(this.animate.bind(this));
+        status.end();
     }
 
 }

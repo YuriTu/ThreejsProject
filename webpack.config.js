@@ -14,7 +14,8 @@ const entries = {
     'particle'     : "./canvas/particle/particle.js",
     "webGL"         : "./webGL/webGL.js",
     "threejs"       : "./threeProject/main",
-    "line"          : "./canvas/lightline/app"
+    "line"          : "./canvas/lightline/app",
+    'line-all':'./canvas/lightline/app-all'
 
 };
 module.exports = {
@@ -22,7 +23,7 @@ module.exports = {
     output : {
         filename   : "[name].bundle.js",
         path       : path.resolve(__dirname, "js/"),
-        publicPath : "http://localhost:9889/js/"
+        publicPath : "http://localhost:9888/js/"
     },
     module: {
         noParse: /jquery/,
@@ -83,7 +84,7 @@ module.exports = {
     devServer: {
         hot    : true,
         inline : true,
-        port:9889,
+        port:9888,
         proxy  : {
             "/api/*": {
                 target       : "http://develop.com",
@@ -93,6 +94,7 @@ module.exports = {
                 }
             }
         },
+        disableHostCheck:true,
         // headers: {
         //     "Access-Control-Allow-Origin"  : "*",
         //     "Access-Control-Allow-Methods" : "GET, POST, PUT, DELETE, PATCH, OPTIONS",

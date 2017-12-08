@@ -3,6 +3,7 @@
 import _ from '../../until/until';
 import {bgParticle} from "../../src/config/config";
 
+
 const canvas = {}
 canvas.obj = document.querySelector('#world');
 canvas.width = canvas.obj.width = window.innerWidth;
