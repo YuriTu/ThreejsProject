@@ -8,3 +8,5 @@ canvas/code
 /canvas/code/
 .idea/
 ci.sh
+
+threeProject/demo/learning-threejs/
