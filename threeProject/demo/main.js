@@ -2,20 +2,22 @@ import * as THREE from 'three';
 
 import Status from 'stats.js';
 
+
 const stats = new Status();
 import _ from '../../until/until';
 const SCREEN_WIDTH = window.innerWidth,
       SCREEN_HEIGHT = window.innerHeight;
-let windowHalfX = window.innerWidth / 2,
-    windowHalfY = window.innerHeight / 2;
+let windowHalfX = SCREEN_WIDTH / 2,
+    windowHalfY = SCREEN_HEIGHT / 2;
 let renderer,camera, scene;
 
-let url = './blender2.json'
+let url = ['./blender1.json','./blender2.json']
 
 
 
 class Main {
     constructor(){
+        this.count = 0;
         this.step = 0;
         this.mouseX = 0;
         this.mouseY = 0;
@@ -29,9 +31,9 @@ class Main {
                 renderer.setSize(window.innerWidth,window.innerHeight);
             },false)
         }
-        this.createParticlesSystem = () => {
+        this.createParticles2 = () => {
             let loader = new THREE.JSONLoader();
-            loader.load(url, (geometry, materials) => {
+            loader.load(url[1], (geometry, materials) => {
                 let mat = new THREE.PointsMaterial({
                     size:3,
                     // vertexColors:true,
@@ -42,12 +44,34 @@ class Main {
                     blending: THREE.AdditiveBlending,
                     map:this.createSprite(),
                 })
-                this.system = new THREE.Points(geometry, mat)
-                this.system.sortParticles = true;
-                this.system.scale.set(20,20,20)
+                this.module2 = new THREE.Points(geometry, mat)
+                this.module2.sortParticles = true;
+                this.module2.scale.set(20,20,20)
+                this.module2.position.set(30,0,0);
 
-                scene.add(this.system)
-                console.log(this.system)
+                // scene.add(this.module1)
+                console.log(this.module2)
+            })
+        }
+        this.createParticlesSystem = () => {
+            let loader = new THREE.JSONLoader();
+            loader.load(url[0], (geometry, materials) => {
+                let mat = new THREE.PointsMaterial({
+                    size:3,
+                    // vertexColors:true,
+                    color:0xffffff,
+                    opacity:.5,
+                    transparent:true,
+                    // 这个好像没生效
+                    blending: THREE.AdditiveBlending,
+                    map:this.createSprite(),
+                })
+                this.module1 = new THREE.Points(geometry, mat)
+                this.module1.sortParticles = true;
+                this.module1.scale.set(20,20,20)
+
+                scene.add(this.module1)
+                console.log(this.module1)
             })
         }
         this.createParticles = () => {
@@ -104,60 +128,66 @@ class Main {
             //     );
             //     geom.colors.push(color);
             // }
-            this.system = new THREE.Points(geom,mat);
-            this.system.sortParticles = true;
-            scene.add(this.system)
+            this.module1 = new THREE.Points(geom,mat);
+            this.module1.sortParticles = true;
+            scene.add(this.module1)
         }
 
         this.handleEvent = () => {
-
             document.addEventListener('mousemove',(e) => {
                 this.mouseX = e.clientX - windowHalfX;
                 this.mouseY = e.clientY - windowHalfY;
 
                 this.mouse.x = (e.clientX / SCREEN_WIDTH) * 2 -1;
                 this.mouse.y = -(e.clientY / SCREEN_HEIGHT) * 2 +1;
-                // console.log(e.clientX,this.mouseX,e.clientY,this.mouseY)
             })
 
             this.antiResize();
         }
 
         this.action = () => {
-            // console.log(!!this.system.geometry,typeof this.system.geometry.vertices.map)
-            this.step += .001;
-            this.system.rotation.y = this.step;
-            let list = this.system.geometry.vertices
-            // this.system.geometry.vertices
-            this.system.geometry.vertices.forEach(i => {
-                // console.log(typeof i.x)
-                i && (i.x += 1)
-
-            })
             this.setCamera();
-            this.setRaycaster();
+            // this.setRaycaster();
+            this.move();
+            this.count++;
 
         }
         this.setCamera = () => {
-            // if( Math.abs(camera.position.x ) < 50){
-                camera.position.x += (this.mouseX - camera.position.x) * .00001;
-            // }
-            // if(Math.abs(camera.position.y) < 50){
-                camera.position.y += (-this.mouseY - camera.position.y) * .00001;
-            // }
-
-
-            // console.log(camera.position)
-         }
-         this.setRaycaster = () => {
-
+                camera.position.x += (this.mouseX - camera.position.x) * .01;
+                camera.position.y += (-this.mouseY - camera.position.y) * .01;
+        }
+        this.setRaycaster = () => {
             this.raycaster.setFromCamera(this.mouse,camera);
             let interactive = this.raycaster.intersectObjects(scene.children);
             console.log(interactive)
-             interactive.forEach(i => {
-                 i.object.material.color.set( 0xffffff );
-             })
-         }
+                interactive.forEach(i => {
+                i.object.material.color.set( 0xffffff );
+                })
+        }
+        this.move = () => {
+            // if(this.count > 10) return;
+            let module1 = this.module1.geometry.vertices; //400 +
+            let module2 = this.module2.geometry.vertices;
+
+
+            let speed = 0.01;
+            for (let i = 0;i < module1.length;i++){
+                let index = (i > module2.length - 1)?( i % module2.length):i;
+
+
+                let returnFlag = (Math.abs(module1[i].x - module2[index].x) < 0.1)
+                    && (Math.abs(module1[i].y - module2[index].y) < 0.1)
+                    && (Math.abs(module1[i].z - module2[index].z) < 0.1);
+                if(!returnFlag){
+                    if(i = 0) console.log(module1[i],module2[i])
+                    module1[i].x += (module2[index].x - module1[i].x) * speed;
+                    module1[i].y += (module2[index].y - module1[i].z) * speed;
+                    module1[i].z += (module2[index].y - module1[i].z) * speed;
+                }
+            }
+
+            this.module1.geometry.verticesNeedUpdate=true;
+        }
     }
     init(){
         // init stats
@@ -168,8 +198,8 @@ class Main {
         scene = new THREE.Scene();
         camera = new THREE.PerspectiveCamera(45, SCREEN_WIDTH / SCREEN_HEIGHT, .1, 1000);
         camera.position.z = 100;
-        // camera.position.x = 10;
-        // camera.position.y = 10;
+        camera.position.x = 10;
+        camera.position.y = 10;
 
         renderer = new THREE.WebGLRenderer( {antialias:true} )
         renderer.setSize(SCREEN_WIDTH,SCREEN_HEIGHT);
@@ -189,7 +219,7 @@ class Main {
         scene.add(ambientLight);
         // pati
         this.createParticlesSystem();
-        console.log(scene)
+        this.createParticles2();
         // scene.add()
         this.handleEvent();
     }
@@ -201,8 +231,8 @@ class Main {
     }
     render(){
         camera.lookAt(scene.position);
+        this.module1 && this.action();
         renderer.render(scene,camera);
-        this.system && this.action();
 
     }
 }
