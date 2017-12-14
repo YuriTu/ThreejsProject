@@ -15,8 +15,10 @@ let url = ['./blender1.json','./blender2.json']
 
 const config = {
     cameraX:0,
-    cameraY:50,
+    cameraY:0,
     cameraZ:200,
+    cameraMoveRat:0.001,
+    cameraSpeed:.2,
 }
 
 class Main {
@@ -64,13 +66,14 @@ class Main {
             this.antiResize();
         }
         this.setCamera = () => {
-            let increX = (this.mouseX - camera.position.x) * .01;
-            let increY = (-this.mouseY - camera.position.y) * .01;
-            if(camera.position.x + increX < 300){
-                camera.position.x += increX
+            let increX = camera.position.x + (this.mouseX / windowHalfX) * config.cameraSpeed;
+            let increY = camera.position.y + (-this.mouseY / windowHalfY) * config.cameraSpeed;
+
+            if(Math.abs(increX) < 15){
+                camera.position.x = increX
             }
-            if(camera.position.y + increY < 300){
-                camera.position.y += increY;
+            if(Math.abs(increY) < 10){
+                camera.position.y = increY;
             }
 
         }
