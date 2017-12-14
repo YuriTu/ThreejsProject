@@ -12,6 +12,10 @@
   version "1.6.4"
   resolved "http://pnpm.baidu.com/@most%2fprelude/-/prelude-1.6.4.tgz#254ab6e22c0d4e7cb19e6ec1c966b75f57317f25"
 
+"@tweenjs/tween.js@^17.1.1":
+  version "17.1.1"
+  resolved "http://pnpm.baidu.com/@tweenjs%2ftween.js/-/tween.js-17.1.1.tgz#a735ec3362a8cff7418733853503c2a553ee1a3a"
+
 abbrev@1:
   version "1.1.1"
   resolved "http://pnpm.baidu.com/abbrev/-/abbrev-1.1.1.tgz#f8f2c887ad10bf67f634f005b6987fed3179aac8"

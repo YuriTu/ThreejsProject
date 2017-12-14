@@ -1,5 +1,5 @@
 import * as THREE from 'three';
-
+import TWEEN from '@tweenjs/tween.js'
 import Status from 'stats.js';
 
 
@@ -13,7 +13,11 @@ let renderer,camera, scene;
 
 let url = ['./blender1.json','./blender2.json']
 
-
+const config = {
+    cameraX:0,
+    cameraY:50,
+    cameraZ:200,
+}
 
 class Main {
     constructor(){
@@ -30,59 +34,6 @@ class Main {
                 windowHalfY = window.innerHeight / 2;
                 renderer.setSize(window.innerWidth,window.innerHeight);
             },false)
-        }
-        this.createParticles2 = () => {
-            let loader = new THREE.JSONLoader();
-            loader.load(url[1], (geometry, materials) => {
-                let mat = new THREE.PointsMaterial({
-                    size:3,
-                    // vertexColors:true,
-                    color:0xffffff,
-                    opacity:.5,
-                    transparent:true,
-                    // 这个好像没生效
-                    blending: THREE.AdditiveBlending,
-                    map:this.createSprite(),
-                })
-                this.module2 = new THREE.Points(geometry, mat)
-                this.module2.sortParticles = true;
-                this.module2.scale.set(20,20,20)
-                this.module2.position.set(30,0,0);
-
-                // scene.add(this.module1)
-                console.log(this.module2)
-            })
-        }
-        this.createParticlesSystem = () => {
-            let loader = new THREE.JSONLoader();
-            loader.load(url[0], (geometry, materials) => {
-                let mat = new THREE.PointsMaterial({
-                    size:3,
-                    // vertexColors:true,
-                    color:0xffffff,
-                    opacity:.5,
-                    transparent:true,
-                    // 这个好像没生效
-                    blending: THREE.AdditiveBlending,
-                    map:this.createSprite(),
-                })
-                this.module1 = new THREE.Points(geometry, mat)
-                this.module1.sortParticles = true;
-                this.module1.scale.set(20,20,20)
-
-                scene.add(this.module1)
-                console.log(this.module1)
-            })
-        }
-        this.createParticles = () => {
-            let mat = new THREE.SpriteMaterial();
-            for (let x = -5;x < 5;x++){
-                for (let y = -5; y < 5;y++){
-                    let particle = new THREE.Sprite(mat);
-                    particle.position.set(x*10,y*10,0);
-                    scene.add(particle);
-                }
-            }
         }
         this.createSprite = () => {
             let canvas = document.createElement('canvas');
@@ -101,38 +52,6 @@ class Main {
             texture.needsUpdate = true;
             return texture;
         }
-        this.createParticlesSystemtest = () => {
-            let geom = new THREE.Geometry();
-            let mat = new THREE.PointsMaterial({
-                size:3,
-                // vertexColors:true,
-                // color:0xffffff,
-                opacity:.5,
-                transparent:true,
-                blending: THREE.AdditiveBlending,
-                map:this.createSprite(),
-            })
-            // let range = 500;
-            // for(let i = 0;i < 5000;i++){
-            //     let particle = new THREE.Vector3(
-            //         Math.random() * range - range / 2,
-            //         Math.random() * range - range / 2,
-            //         Math.random() * range - range / 2
-            //     )
-            //     geom.vertices.push(particle);
-            //     let color = new THREE.Color(0x00ff00);
-            //     color.setHSL(
-            //         color.getHSL().h,
-            //         color.getHSL().s,
-            //         Math.random() * color.getHSL().l
-            //     );
-            //     geom.colors.push(color);
-            // }
-            this.module1 = new THREE.Points(geom,mat);
-            this.module1.sortParticles = true;
-            scene.add(this.module1)
-        }
-
         this.handleEvent = () => {
             document.addEventListener('mousemove',(e) => {
                 this.mouseX = e.clientX - windowHalfX;
@@ -144,49 +63,99 @@ class Main {
 
             this.antiResize();
         }
-
-        this.action = () => {
-            this.setCamera();
-            // this.setRaycaster();
-            this.move();
-            this.count++;
-
-        }
         this.setCamera = () => {
-                camera.position.x += (this.mouseX - camera.position.x) * .01;
-                camera.position.y += (-this.mouseY - camera.position.y) * .01;
+            let increX = (this.mouseX - camera.position.x) * .01;
+            let increY = (-this.mouseY - camera.position.y) * .01;
+            if(camera.position.x + increX < 300){
+                camera.position.x += increX
+            }
+            if(camera.position.y + increY < 300){
+                camera.position.y += increY;
+            }
+
         }
         this.setRaycaster = () => {
             this.raycaster.setFromCamera(this.mouse,camera);
-            let interactive = this.raycaster.intersectObjects(scene.children);
-            console.log(interactive)
+                let interactive = this.raycaster.intersectObjects(scene.children);
+                console.log(interactive)
                 interactive.forEach(i => {
                 i.object.material.color.set( 0xffffff );
-                })
+            })
         }
-        this.move = () => {
-            // if(this.count > 10) return;
-            let module1 = this.module1.geometry.vertices; //400 +
-            let module2 = this.module2.geometry.vertices;
+        this.moduleLoader = (url) => {
+            return new Promise((resolve,reject) => {
+                let loader = new THREE.JSONLoader();
+                loader.load(url,(geo,mat) => {
+                    let material = new THREE.PointsMaterial({
+                        size:3,
+                        // vertexColors:true,
+                        color:0xffffff,
+                        opacity:.5,
+                        transparent:true,
+                        // 这个好像没生效
+                        blending: THREE.AdditiveBlending,
+                        map:this.createSprite(),
+                    })
+                    let module = new THREE.Points(geo,material);
+                    module.sortParticles = true;
+                    module.scale.set(20,20,20);
+                    resolve({geometry:geo,material,module});
+                })
 
+            })
+        }
+        this.createModule = () => {
+            console.log(typeof Promise.all)
+            Promise.all([this.moduleLoader(url[0]),this.moduleLoader(url[1])])
+                .then(rs => {
+                this.module1 = rs[0].module;
+                this.module2 = rs[1].module;
+                scene.add(this.module1);
 
-            let speed = 0.01;
-            for (let i = 0;i < module1.length;i++){
-                let index = (i > module2.length - 1)?( i % module2.length):i;
+                this.initAnimator();
 
+                this.animate();
+            })
+        }
+        this.initAnimator = () => {
+            let m1 = this.module1.geometry.vertices; //400 +
+            let m2 = this.module2.geometry.vertices;
+            for (let i = 0;i <m1.length;i++){
+                let index = (i > m2.length - 1)?( i % m2.length):i;
+                // 当然直接 m1 -> m2 也可以，但是害怕merge掉了其他什么东西...
+                let ani2 = new TWEEN.Tween(m1[i]).to({
+                    x:m2[index].x,
+                    y:m2[index].y,
+                    z:m2[index].z
+                },2000)
+                    .easing(TWEEN.Easing.Sinusoidal.InOut)
+                    .delay(Math.random() * 1000)
+                    .start();
+                // 先打散，再重组
+                let ani1 = new TWEEN.Tween(m1[i])
+                    .to({
+                        x:Math.random() * 5,
+                        y:Math.random() * 5,
+                        z:Math.random() * 5
+                    },2000)
+                    .delay(500)
+                    .start().chain(ani2)
 
-                let returnFlag = (Math.abs(module1[i].x - module2[index].x) < 0.1)
-                    && (Math.abs(module1[i].y - module2[index].y) < 0.1)
-                    && (Math.abs(module1[i].z - module2[index].z) < 0.1);
-                if(!returnFlag){
-                    if(i = 0) console.log(module1[i],module2[i])
-                    module1[i].x += (module2[index].x - module1[i].x) * speed;
-                    module1[i].y += (module2[index].y - module1[i].z) * speed;
-                    module1[i].z += (module2[index].y - module1[i].z) * speed;
-                }
             }
+            let position = new TWEEN.Tween(this.module1.position).to({
+                x:100,
+                y:50 * Math.random()
+            },2000).start()
 
+            console.log(scene)
+        }
+        this.action = () => {
+            this.setCamera();
+            // this.setRaycaster();
+            // this.move();
             this.module1.geometry.verticesNeedUpdate=true;
+            this.count++;
+
         }
     }
     init(){
@@ -197,9 +166,9 @@ class Main {
         const container = document.querySelector('.ani-container');
         scene = new THREE.Scene();
         camera = new THREE.PerspectiveCamera(45, SCREEN_WIDTH / SCREEN_HEIGHT, .1, 1000);
-        camera.position.z = 100;
-        camera.position.x = 10;
-        camera.position.y = 10;
+        camera.position.z = config.cameraZ;
+        camera.position.x = config.cameraX;
+        camera.position.y = config.cameraY;
 
         renderer = new THREE.WebGLRenderer( {antialias:true} )
         renderer.setSize(SCREEN_WIDTH,SCREEN_HEIGHT);
@@ -217,26 +186,22 @@ class Main {
         // light
         let ambientLight = new THREE.AmbientLight(0x404040);
         scene.add(ambientLight);
-        // pati
-        this.createParticlesSystem();
-        this.createParticles2();
         // scene.add()
         this.handleEvent();
+        this.createModule();
     }
     animate(){
-        stats.update();
-        this.render();
         _.raf(this.animate.bind(this));
-
+        stats.update();
+        TWEEN.update();
+        this.render();
     }
     render(){
         camera.lookAt(scene.position);
-        this.module1 && this.action();
+        this.action();
         renderer.render(scene,camera);
-
     }
 }
 
 const m = new Main();
 m.init();
-m.animate();
