@@ -17,6 +17,37 @@
 </head>
 <body>
 <div class="ani-container"></div>
+
+<script type="x-shader/x-vertex" id="vertexshader">
+
+    attribute float alpha;
+
+    void main() {
+
+        vec4 mvPosition = modelViewMatrix * vec4( position, 1.0 );
+
+        gl_PointSize = 8.0 * alpha; // use alpha to vary point size, instead
+
+        gl_Position = projectionMatrix * mvPosition;
+
+    }
+
+</script>
+
+<script type="x-shader/x-fragment" id="fragmentshader">
+
+    uniform vec3 color;
+
+    void main() {
+
+        gl_FragColor = vec4( color, 1 );
+
+    }
+
+</script>
+
 </body>
 <script src="../../js/threedemo.bundle.js" type="text/javascript"></script>
+<div id="info">PointCloud with Custom, Dynamic Attribute</div>
+
 </html>

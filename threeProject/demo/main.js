@@ -5,18 +5,21 @@ import Status from 'stats.js';
 
 const stats = new Status();
 import _ from '../../until/until';
+import Particle from './components/particle'
 const SCREEN_WIDTH = window.innerWidth,
       SCREEN_HEIGHT = window.innerHeight;
 let windowHalfX = SCREEN_WIDTH / 2,
     windowHalfY = SCREEN_HEIGHT / 2;
 let renderer,camera, scene;
 
+const pi = Math.PI;
+const pis = pi / 50;
 let url = ['./blender1.json','./blender2.json']
 
 const config = {
     cameraX:0,
     cameraY:0,
-    cameraZ:200,
+    cameraZ:100,
     cameraMoveRat:0.001,
     cameraSpeed:.2,
 }
@@ -29,6 +32,13 @@ class Main {
         this.mouseY = 0;
         this.mouse = new THREE.Vector2();
         this.raycaster = new THREE.Raycaster();
+        this.particles = [];
+        this.particleOpts = {
+            rings:10,
+            radius:0,
+            radiusStep: 1.5
+        };
+        this.elapsedMilliseconds = 0;
 
         this.antiResize = () => {
             window.addEventListener('resize',() => {
@@ -107,8 +117,108 @@ class Main {
 
             })
         }
+        this.createPointMap = () => {
+            let opts = this.particleOpts;
+            // let geo = new THREE.BufferGeometry();
+            let geo = new THREE.Geometry();
+            let position = [];
+            let scale = [];
+            let alpha = [];
+            for (let i = 0;i < opts.rings;i++){
+                let count = ( i === 0? 1 : 1 + Math.ceil( i * 7));
+
+                for (let j = 0; j < count;j++){
+                    let angle = (j / count) * pi * 2;
+                    let x = Math.cos(angle) * opts.radius;
+                    let y = Math.sin(angle) * opts.radius;
+                    let z = 0;
+                    let size = _.analogy(i,0,opts.rings,20,5);
+                    //
+                    let particle = new THREE.PointsMaterial({
+                        size:size * 10,
+                        opacity:.5,
+                        transparent:true,
+                        // 这个好像没生效
+                        blending: THREE.AdditiveBlending,
+                        map:this.createSprite(),
+                    });
+                    particle.x = x;
+                    particle.y = y;
+                    particle.z = size;
+                    geo.vertices.push(particle);
+                    // this.particles.push(new Particle({
+                    //     x:x,
+                    //     y:y,
+                    //     z:z,
+                    //     size: size,
+                    //     radius: this.radius,
+                    //     angle: angle,
+                    //     color: 0xffffff,
+                    //     opacity: 1,
+                    //     group: scene
+                    // }))
+                }
+                opts.radius += opts.radiusStep;
+
+            }
+            // let buffPosition = new Float32Array(position);
+            // let buffScale = new Float32Array(scale)
+
+            // geo.addAttribute('position',new THREE.Float32BufferAttribute(position,3));
+            // geo.addAttribute('size',new THREE.Float32BufferAttribute(scale,1).setDynamic( true ));
+            // geo.addAttribute('alpha',new THREE.Float32BufferAttribute(alpha,1));
+
+            console.log(geo,scale)
+            // geo.scale(5,5,5)
+            let mat = new THREE.PointsMaterial();
+
+
+            // let uniforms = {
+            //
+            //     color: { type: "c", value: new THREE.Color( 0xeeeeee ) },
+            //
+            // };
+            // var shaderMaterial = new THREE.ShaderMaterial( {
+            //
+            //     uniforms:       uniforms,
+            //     vertexShader:   document.getElementById( 'vertexshader' ).textContent,
+            //     fragmentShader: document.getElementById( 'fragmentshader' ).textContent,
+            //     transparent:    false
+            //
+            // });
+
+
+
+            // this.parField = new THREE.Points(geo,shaderMaterial);
+            this.parField = new THREE.Points(geo,mat);
+            this.parField.name = 'circlePoints'
+            // this.parField.scale.set(5,5,5)
+            scene.add(this.parField);
+        }
+        this.setSize = () => {
+            let freeScale = Math.cos(this.elapsedMilliseconds * .005 - this.particleOpts.radius * .6);
+            let lockScale = Math.abs(freeScale)
+            let list = this.parField.geometry.vertices;
+            // for (let i = 0;i < list.length;i++){
+            //     list[i].z += freeScale;
+            // }
+
+
+            // var alphas = this.parField.geometry.attributes.alpha;
+            // var count = alphas.count;
+            //
+
+            // for( var i = 0; i < count; i ++ ) {
+            //
+            //     // dynamically change alphas
+            //     alphas.array[ i ] = lockScale * 0.8;
+            //
+            // }
+            //
+            // alphas.needsUpdate = true; // important!
+        }
         this.createModule = () => {
-            console.log(typeof Promise.all)
+            this.createPointMap()
             Promise.all([this.moduleLoader(url[0]),this.moduleLoader(url[1])])
                 .then(rs => {
                 this.module1 = rs[0].module;
@@ -146,7 +256,7 @@ class Main {
 
             }
             let position = new TWEEN.Tween(this.module1.position).to({
-                x:100,
+                x:20,
                 y:50 * Math.random()
             },2000).start()
 
@@ -156,7 +266,9 @@ class Main {
             this.setCamera();
             // this.setRaycaster();
             // this.move();
+            this.setSize();
             this.module1.geometry.verticesNeedUpdate=true;
+            this.parField.geometry.verticesNeedUpdate=true;
             this.count++;
 
         }
@@ -200,6 +312,7 @@ class Main {
         this.render();
     }
     render(){
+        this.elapsedMilliseconds++;
         camera.lookAt(scene.position);
         this.action();
         renderer.render(scene,camera);

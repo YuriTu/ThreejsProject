@@ -68,10 +68,16 @@ module.exports = {
             }
         }),
         new DashboardPlugin(),
+        new webpack.ProvidePlugin({
+            THREE: 'three',
+            TWEEN: 'tween.js',
+            Stats: 'stats.js'
+        })
         // new webpack.optimize.OccurrenceOrderPlugin(),
         // new webpack.HotModuleReplacementPlugin(),
         // new webpack.NoErrorsPlugin()
     ],
+
     node: {
         console: false,
         fs: 'empty',
