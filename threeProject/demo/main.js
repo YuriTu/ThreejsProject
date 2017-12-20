@@ -195,13 +195,13 @@ class Main {
 
         }
         this.createModule = () => {
-            this.createPointMap()
+            // this.createPointMap()
             Promise.all([this.moduleLoader(url[0]),this.moduleLoader(url[1])])
                 .then(rs => {
                 this.module1 = rs[0].module;
                 this.module2 = rs[1].module;
                 scene.add(this.module1);
-
+                // 模型变换动画
                 this.initAnimator();
 
                 this.animate();
