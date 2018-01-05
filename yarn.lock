@@ -1243,6 +1243,16 @@ chokidar@^1.6.0, chokidar@^1.7.0:
   optionalDependencies:
     fsevents "^1.0.0"
 
+christina@^0.0.1:
+  version "0.0.1"
+  resolved "http://pnpm.baidu.com/christina/-/christina-0.0.1.tgz#ffd0c1e682bab75c407793dd493410c3df8a73e4"
+  dependencies:
+    babel-core "^6.26.0"
+    babel-loader "^7.1.2"
+    babel-plugin-transform-runtime "^6.23.0"
+    babel-preset-env "^1.6.1"
+    babel-preset-stage-0 "^6.24.1"
+
 cipher-base@^1.0.0, cipher-base@^1.0.1, cipher-base@^1.0.3:
   version "1.0.4"
   resolved "http://pnpm.baidu.com/cipher-base/-/cipher-base-1.0.4.tgz#8760e4ecc272f4c363532f926d874aae2c1397de"

@@ -16,7 +16,8 @@ const entries = {
     // "threejs"       : "./threeProject/main",
     // "line"          : "./canvas/lightline/app",
     // 'line-all':'./canvas/lightline/app-all',
-    'threedemo':'./threeProject/demo/main',
+    // 'threedemo':'./threeProject/demo/main',
+    'mmd':'./threeProject/MMD/index',
 
 };
 module.exports = {

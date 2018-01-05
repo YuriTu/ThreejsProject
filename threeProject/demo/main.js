@@ -2,7 +2,8 @@ import * as THREE from 'three';
 import TWEEN from '@tweenjs/tween.js'
 import Status from 'stats.js';
 
-
+import {Picker} from 'hi-ui'
+console.log(Picker)
 const stats = new Status();
 import _ from '../../until/until';
 import Particle from './components/particle'
@@ -120,39 +121,99 @@ class Main {
             })
         }
         this.createBufferPoints = () => {
-            let buffPosition = new Float32Array(position);
-            let buffScale = new Float32Array(scale)
 
-            geo.addAttribute('position',new THREE.Float32BufferAttribute(position,3));
-            geo.addAttribute('size',new THREE.Float32BufferAttribute(scale,1).setDynamic( true ));
-            geo.addAttribute('alpha',new THREE.Float32BufferAttribute(alpha,1));
+            let geometry = new THREE.BufferGeometry();
+            let opts = {
+                radius:10,
+                angle:0,
+                count:50,
+                baseSize: 10,
+            }
+            let module = {
+                position:new Float32Array(opts.count * 3),
+                size:new Float32Array(opts.count),
+            }
 
-            console.log(geo,scale)
-            geo.scale(5,5,5)
-            let mat = new THREE.PointsMaterial();
+            for (let i = 0;i < opts.count;i++){
+                let angle = (i / opts.count) * Math.PI * 2;
+                let x = Math.cos(angle) * opts.radius
+                let y = Math.sin(angle) * opts.radius
+                let z = 0;
+                let size = Math.abs(Math.cos(angle) * opts.baseSize)
+                // let size = 1 * opts.baseSize;
+                module.position[i * 3] = x;
+                module.position[i * 3 + 1] = y;
+                module.position[i * 3 + 2] = z;
+                module.size[i] = 5
 
 
-            let uniforms = {
+            }
+            console.log(module.size)
+            geometry.addAttribute('position',new THREE.BufferAttribute(module.position,3));
+            geometry.addAttribute('size',new THREE.BufferAttribute(module.size,1));
 
-                color: { type: "c", value: new THREE.Color( 0xeeeeee ) },
+            // let material = new THREE.PointsMaterial({color:'#ffffff'});
+            let material = new THREE.ShaderMaterial( {
 
-            };
-            var shaderMaterial = new THREE.ShaderMaterial( {
+                uniforms: {
+                    color: {
+                        value: new THREE.Color(0xff0000)
+                    },
+                    texture: {
+                        value: new THREE.TextureLoader().load('./textures/sprites/disc.png')
+                    }
 
-                uniforms:       uniforms,
-                vertexShader:   document.getElementById( 'vertexshader' ).textContent,
+                    // time: { value: 1.0 },
+                    // resolution: { value: new THREE.Vector2() }
+
+                },
+
+                vertexShader: document.getElementById( 'vertexshader' ).textContent,
+
                 fragmentShader: document.getElementById( 'fragmentshader' ).textContent,
-                transparent:    false
+                alphaTest: 0.9
 
-            });
+            } );
+            let points = new THREE.Points(geometry,material);
+            points.name = 'buffer'
+            this.buffer = points;
+            scene.add(points);
 
 
 
-            this.parField = new THREE.Points(geo,shaderMaterial);
-            this.parField = new THREE.Points(geo,mat);
-            this.parField.name = 'circlePoints'
-            // this.parField.scale.set(5,5,5)
-            scene.add(this.parField);
+            // let buffPosition = new Float32Array(position);
+            // let buffScale = new Float32Array(scale)
+            //
+            // geo.addAttribute('position',new THREE.Float32BufferAttribute(position,3));
+            // geo.addAttribute('size',new THREE.Float32BufferAttribute(scale,1).setDynamic( true ));
+            // geo.addAttribute('alpha',new THREE.Float32BufferAttribute(alpha,1));
+            //
+            // console.log(geo,scale)
+            // geo.scale(5,5,5)
+            // let mat = new THREE.PointsMaterial();
+            //
+            //
+            // let uniforms = {
+            //
+            //     color: { type: "c", value: new THREE.Color( 0xeeeeee ) },
+            //
+            // };
+            // var shaderMaterial = new THREE.ShaderMaterial( {
+            //
+            //     uniforms:       uniforms,
+            //     vertexShader:   document.getElementById( 'vertexshader' ).textContent,
+            //     fragmentShader: document.getElementById( 'fragmentshader' ).textContent,
+            //     transparent:    false
+            //
+            // });
+            //
+            //
+            //
+            // this.parField = new THREE.Points(geo,shaderMaterial);
+            // this.parField = new THREE.Points(geo,mat);
+            // this.parField.name = 'circlePoints'
+            // // this.parField.scale.set(5,5,5)
+            // scene.add(this.parField);
         }
         this.createPointMap = () => {
             let opts = this.particleOpts;
@@ -194,8 +255,25 @@ class Main {
             this.particles.forEach(i => i.update(this.elapsedMilliseconds,this.deltaTimeNormal))
 
         }
+        this.setBufferSize = () => {
+            // debugger
+            let module = scene.children[3]
+            // console.log(module.geometry.getAttribute('size'))
+
+            let size = module.geometry.attributes.size
+            let length = size.array.length;
+            let newList = new Float32Array(length)
+            for (let i = 0;i < length;i++){
+                newList[i] = size.array[i] + Math.sin(this.elapsedMilliseconds) * 2
+            }
+            scene.children[3].geometry.attributes.size.array = newList;
+            scene.children[3].geometry.attributes.size.needsUpdate = true;
+
+
+        }
         this.createModule = () => {
             // this.createPointMap()
+            this.createBufferPoints()
             Promise.all([this.moduleLoader(url[0]),this.moduleLoader(url[1])])
                 .then(rs => {
                 this.module1 = rs[0].module;
@@ -243,8 +321,11 @@ class Main {
             this.setCamera();
             // this.setRaycaster();
             // this.move();
-            this.setSize();
-            this.module1.geometry.verticesNeedUpdate=true;
+            // this.setSize();
+            this.setBufferSize()
+            this.buffer.geometry.attributes.size.needsUpdate = true
+            // this.module1.geometry.verticesNeedUpdate=true;
+            // this.buffer.geometry.size.needsUpdate = true;
             // this.parField.geometry.verticesNeedUpdate=true;
             this.count++;
         }
