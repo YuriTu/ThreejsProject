@@ -2,7 +2,7 @@ import * as THREE from 'three';
 
 import Status from 'stats.js';
 const stats = new Status();
-import _ from 'christina';
+import _ from './christina';
 const SCREEN_WIDTH = window.innerWidth,
     SCREEN_HEIGHT = window.innerHeight;
 let windowHalfX = window.innerHeight / 2,
@@ -50,6 +50,7 @@ class Main {
     animate(){
         stats.update();
         this.render();
+        console.log(_)
         _.raf(this.animate.bind(this));
 
     }
