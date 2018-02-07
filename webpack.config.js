@@ -25,7 +25,7 @@ module.exports = {
     output : {
         filename   : "[name].bundle.js",
         path       : path.resolve(__dirname, "js/"),
-        publicPath : "http://localhost:9888/js/"
+        publicPath : "http://0.0.0.0:9888/js/"
     },
     module: {
         noParse: /jquery/,

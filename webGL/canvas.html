@@ -7,9 +7,15 @@
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>Document</title>
     <style>
-        *{
-            border: 0;
+        body, html {
+            width: 100%;
+            height: 100%;
             margin: 0;
+            padding: 0;
+            overflow: hidden;
+        }
+        canvas {
+            position:absolute;
         }
     </style>
 </head>
@@ -17,23 +23,7 @@
     <canvas width="1280" height="768" id="world"></canvas>
     <script src="../js/webGL.bundle.js"></script>
 <script>
-    (function() {
-        var su= document.getElementById("world");
-        var suctx = su.getContext("2d"); //1500+
-        var off = document.createElement("canvas");
-        off.style.width = 1280 + "px";
-        off.style.height = 768 + "px";
-        var offctx = off.getContext("2d");
-        var n = 10000;
-        var st = Date.now();
-        offctx.moveTo(10,10)
-        for(var i = 0;i < n ;i++){
-            offctx.lineTo(50,100);
-            offctx.stroke();
-        }
-        var end = Date.now();
-        console.log(end - st);
-    })()
+
 </script>
 </body>
 </html>
