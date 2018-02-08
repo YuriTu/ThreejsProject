@@ -25,7 +25,7 @@ module.exports = {
     output : {
         filename   : "[name].bundle.js",
         path       : path.resolve(__dirname, "js/"),
-        publicPath : "http://0.0.0.0:9888/js/"
+        publicPath : "http://0.0.0.0:9777/js/"
     },
     module: {
         noParse: /jquery/,
@@ -92,7 +92,7 @@ module.exports = {
     devServer: {
         hot    : true,
         inline : true,
-        port:9888,
+        port:9777,
         proxy  : {
             "/api/*": {
                 target       : "http://develop.com",
