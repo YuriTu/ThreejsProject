@@ -22,16 +22,21 @@ gl.clearColor(0.0,0.0,0.0,1.0);
 
 let vertextshader = `
     attribute vec4 a_Position;
-    attribute float a_PointSize;
     void main() {
         gl_Position = a_Position;
-        gl_PointSize = a_PointSize;
     }
 `
+// let vertextshader = `
+//     attribute vec4 a_Position;
+//     attribute float a_PointSize;
+//     void main() {
+//         gl_Position = a_Position;
+//         gl_PointSize = a_PointSize;
+//     }
+// `
 let fragmentshader = `
     precision mediump float;
     uniform vec4 u_FragColor;
-    
     void main() {
         gl_FragColor = u_FragColor;
     }
@@ -40,53 +45,45 @@ let fragmentshader = `
 initShaders(gl,vertextshader,fragmentshader);
 
 let a_Position = gl.getAttribLocation(gl.program, 'a_Position');
-let a_PointSize = gl.getAttribLocation(gl.program, 'a_PointSize');
+// let a_PointSize = gl.getAttribLocation(gl.program, 'a_PointSize');
 let u_FragColor = gl.getUniformLocation(gl.program, 'u_FragColor');
 
 if(!u_FragColor){
     throw new Error('!!');
-}
+};
+
+gl.uniform4f(u_FragColor,1.0,0.0,0.0,1.0);
+// gl.vertexAttrib1f(a_PointSize,10.0);
+
+// gl.vertexAttrib3f(a_Position,0.5,0.0,0.0);
+// gl.clear(gl.COLOR_BUFFER_BIT);
+// gl.drawArrays(gl.POINTS,0,1);
+
+let arr = [
+
+    -0.5,0.5,
+    -0.5,-0.5,
+    0.5,0.5,
+    0.5,-0.5
+]
+let vertices = new Float32Array(arr)
 
 
-const gl_points = [];
-const gl_points_color = [];
-const pointClick = (event) => {
-    let x = (event.clientX - HALF_WIDTH) / HALF_WIDTH;
-    let y = -(event.clientY - HALF_HEIGHT) / HALF_HEIGHT;
-    gl_points.push({
-        x,
-        y
-    });
-    let color = {
-        r:Math.random(),
-        g:Math.random(),
-        b:Math.random(),
+let buffer = gl.createBuffer();
 
-    }
-    gl_points_color.push(color)
+gl.bindBuffer(gl.ARRAY_BUFFER,buffer);
 
-    gl.clear(gl.COLOR_BUFFER_BIT);
+gl.bufferData(gl.ARRAY_BUFFER,vertices,gl.STATIC_DRAW);
 
-    gl_points.forEach(i => {
-        gl.vertexAttrib3f(a_Position,i.x,i.y,0.0);
-        // gl.vertexAttrib3f(a_Position,x,y,0.0);
-        gl.vertexAttrib1f(a_PointSize,20.0);
-        gl.uniform4f(u_FragColor,color.r,color.g,color.b,1.0);
 
-        gl.drawArrays(gl.POINTS,0,1);
-        console.log(x,y)
-    })
 
-}
+gl.vertexAttribPointer(a_Position,2,gl.FLOAT,false,0,0);
 
-const handleEvent = () => {
-    canvas.addEventListener('mousedown',(e) => {
-        pointClick(e);
-    })
-}
+gl.enableVertexAttribArray(a_Position);
 
-handleEvent();
-gl.clear(gl.COLOR_BUFFER_BIT);
+gl.drawArrays(gl.TRIANGLE_FAN,0,arr.length / 2);
+
+
 
 
 
