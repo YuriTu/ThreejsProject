@@ -3,7 +3,8 @@
 import {getWebGLContext,
     loadShader,
     createProgram,
-    initShaders} from './lib/cuon-utils'
+    initShaders} from './lib/cuon-utils';
+import {Matrix4} from "./lib/cuon-matrix";
 
 const SCREEN_WIDTH = window.innerWidth;
 const SCREEN_HEIGHT = window.innerHeight;
@@ -22,16 +23,13 @@ gl.clearColor(0.0,0.0,0.0,1.0);
 
 let vertextshader = `
     attribute vec4 a_Position;
-    uniform float u_CosB, u_SinB;
+    uniform mat4 u_ModelMatrix;
     void main() {
-        gl_Position.x = a_Position.x * u_CosB - a_Position.y * u_SinB;
-        gl_Position.y = a_Position.x * u_SinB + a_Position.y * u_CosB;
-        gl_Position.z = a_Position.z;
-        gl_Position.w = 1.0; 
+        gl_Position = u_ModelMatrix * a_Position;
     }
 `
 const config = {
-    angle:45.0,
+    angle:35.0,
 }
 let fragmentshader = `
     precision mediump float;
@@ -42,14 +40,12 @@ let fragmentshader = `
 `;
 
 initShaders(gl,vertextshader,fragmentshader);
-// 把数据传给shader
+// 定义location
 let a_Position = gl.getAttribLocation(gl.program, 'a_Position');
-// let u_Translation = gl.getUniformLocation(gl.program, 'u_Translation');
-// let a_PointSize = gl.getAttribLocation(gl.program, 'a_PointSize');
 let u_FragColor = gl.getUniformLocation(gl.program, 'u_FragColor');
+let u_ModelMatrix = gl.getUniformLocation(gl.program, 'u_ModelMatrix');
 
-let u_CosB = gl.getUniformLocation(gl.program, 'u_CosB');
-let u_SinB = gl.getUniformLocation(gl.program, 'u_SinB');
+
 
 if(!u_FragColor){
     throw new Error('!!');
@@ -65,20 +61,13 @@ let rad = Math.PI * config.angle / 180.0;
 let cos = Math.cos(rad);
 let sin = Math.sin(rad);
 
-
-
-gl.uniform1f(u_SinB,sin);
-gl.uniform1f(u_CosB,cos);
-
+let xformMatrix = new Matrix4();
+xformMatrix.setRotate(config.angle, 0, 0, 1);
+xformMatrix.translate(0.8,0.1,0);
 
 
 gl.uniform4f(u_FragColor,1.0,0.0,0.0,1.0);
-// gl.uniform4f(u_Translation,trans.x,trans.y,trans.z,0.0);
-// gl.vertexAttrib1f(a_PointSize,10.0);
-
-// gl.vertexAttrib3f(a_Position,0.5,0.0,0.0);
-// gl.clear(gl.COLOR_BUFFER_BIT);
-// gl.drawArrays(gl.POINTS,0,1);
+gl.uniformMatrix4fv(u_ModelMatrix,false,xformMatrix.elements);
 
 let arr = [
 
