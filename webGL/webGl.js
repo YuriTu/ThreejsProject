@@ -29,7 +29,7 @@ let vertextshader = `
     }
 `
 const config = {
-    angle:35.0,
+    angle:80,
 }
 let fragmentshader = `
     precision mediump float;
@@ -62,8 +62,11 @@ let cos = Math.cos(rad);
 let sin = Math.sin(rad);
 
 let xformMatrix = new Matrix4();
-xformMatrix.setRotate(config.angle, 0, 0, 1);
-xformMatrix.translate(0.8,0.1,0);
+// xformMatrix.setRotate(config.angle, 0, 0, 1);
+// xformMatrix.translate(0.8,0.1,0);
+xformMatrix.setTranslate(0.8,0.1,0);
+xformMatrix.rotate(config.angle, 0, 0, 1);
+
 
 
 gl.uniform4f(u_FragColor,1.0,0.0,0.0,1.0);
