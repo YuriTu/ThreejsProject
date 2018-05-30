@@ -13,6 +13,7 @@ const entries = {
     // "rotate"      : "./canvas/rotate/rotate.js",
     // 'particle'     : "./canvas/particle/particle.js",
     "webGL"         : "./webGL/webGL.js",
+    "svg"         : "./svg/index.js",
     // "threejs"       : "./threeProject/main",
     // "line"          : "./canvas/lightline/app",
     // 'line-all':'./canvas/lightline/app-all',
@@ -93,6 +94,7 @@ module.exports = {
         hot    : true,
         inline : true,
         port:9777,
+        host:'0.0.0.0',
         proxy  : {
             "/api/*": {
                 target       : "http://develop.com",

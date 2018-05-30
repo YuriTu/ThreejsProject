@@ -30,6 +30,8 @@ let vertextshader = `
 `
 const config = {
     angle:80,
+    angle_step:45.0,
+    current_angle:0,
 }
 let fragmentshader = `
     precision mediump float;
@@ -95,5 +97,3 @@ gl.vertexAttribPointer(a_Position,2,gl.FLOAT,false,0,0);
 gl.enableVertexAttribArray(a_Position);
 
 gl.drawArrays(gl.TRIANGLE_FAN,0,arr.length / 2);
-
-
