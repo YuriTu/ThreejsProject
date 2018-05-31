@@ -2,8 +2,6 @@ import * as THREE from 'three';
 import TWEEN from '@tweenjs/tween.js'
 import Status from 'stats.js';
 
-import {Picker} from 'hi-ui'
-console.log(Picker)
 const stats = new Status();
 import _ from '../../until/until';
 import Particle from './components/particle'

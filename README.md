@@ -1,13 +1,6 @@
-# ThreejsProject
+2. 原生webgl 圆球动画
 
-这个动画分四步开发 
+1. canvas rotate html 增加对输入的读取
 
-1. 完成 粒子的3d化 做出如何深入  在浮出的3d感觉  ok
-2. 通过鼠标的距离 完成如何做旋转效果  ok
-3. 多重文字的产生于打撒
-4. 循坏产生出对应的动画
+3. css 球体动画
 
-
-
-#webpack
-path的作用是nodejs自带的一个对路径进行操作的工具,是node自带的不用npm装

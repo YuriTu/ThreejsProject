@@ -2,8 +2,7 @@
 
 import _ from '../../until/until';
 import {bgParticle} from "../../src/config/config";
-import Status from '../../until/status.min'
-let status = new Status()
+
 const canvas = {}
 canvas.obj = document.querySelector('#world');
 canvas.width = canvas.obj.width = window.innerWidth
@@ -89,13 +88,10 @@ class Main {
         this.createLine();
         this.animate();
         console.log(navigator.appVersion)
-        status.showPanel(0);
-        document.body.appendChild(status.dom);
 
     }
 
     animate(){
-        status.begin();
         ctx.globalCompositeOperation = 'source-over';
         ctx.fillStyle = 'rgba(0,0,0,0.2)';
         ctx.fillRect(0,0,canvas.width,canvas.height);
@@ -110,7 +106,6 @@ class Main {
         // start = now;
 
         _.raf(this.animate.bind(this));
-        status.end();
     }
 
 }

@@ -1,5 +1,5 @@
 import * as THREE from 'three';
-import Status from '../until/status.min';
+import Status from 'stats.js';
 const stats = new Status();
 
 let SCREEN_WIDTH = window.innerWidth,

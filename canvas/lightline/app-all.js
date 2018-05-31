@@ -14,7 +14,7 @@ const lineLength = 30;
 let start = 0;
 const opts = {
     length:lineLength,
-    linesCount:1500,
+    linesCount:150,
     createRat:0.8,
     baseAliveTime:10,
     // baseRad: Math.PI * 2 / 4,

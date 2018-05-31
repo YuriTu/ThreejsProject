@@ -116,7 +116,6 @@ class ParticleText{
 			}
 			item.print(this.focallength);
 		});
-		console.log("1");
 		window.requestAnimationFrame(this.animate.bind(this));
 	}
 	getImgData(text){
