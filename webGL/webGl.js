@@ -28,11 +28,7 @@ let vertextshader = `
         gl_Position = u_ModelMatrix * a_Position;
     }
 `
-const config = {
-    angle:80,
-    angle_step:45.0,
-    current_angle:0,
-}
+
 let fragmentshader = `
     precision mediump float;
     uniform vec4 u_FragColor;
@@ -40,6 +36,13 @@ let fragmentshader = `
         gl_FragColor = u_FragColor;
     }
 `;
+
+const config = {
+    angle:80,
+    angle_step:.45,
+    current_angle:0,
+}
+
 
 initShaders(gl,vertextshader,fragmentshader);
 // 定义location
@@ -63,16 +66,43 @@ let rad = Math.PI * config.angle / 180.0;
 let cos = Math.cos(rad);
 let sin = Math.sin(rad);
 
-let xformMatrix = new Matrix4();
+let modelMatrix = new Matrix4();
+
+let lastTime = Date.now();
+let updateDeg = (cur) => {
+    let now = Date.now();
+    let elapsed = now - lastTime;
+    let newAngle = cur + (elapsed /1000) * config.angle_step;
+    return newAngle % 360;
+}
+
+let draw = (matrix,angle,ct) => {
+    matrix.setRotate(angle,0,0,1);
+
+    ct.uniformMatrix4fv(u_ModelMatrix, false, matrix.elements);
+
+    ct.clear(ct.COLOR_BUFFER_BIT);
+
+    gl.drawArrays(gl.TRIANGLE_FAN,0,4);
+}
+
+let step = () => {
+    config.current_angle = updateDeg(config.current_angle);
+    draw(modelMatrix,config.current_angle,gl);
+    requestAnimationFrame(step);
+}
+
+
+// let xformMatrix = new Matrix4();
 // xformMatrix.setRotate(config.angle, 0, 0, 1);
 // xformMatrix.translate(0.8,0.1,0);
-xformMatrix.setTranslate(0.8,0.1,0);
-xformMatrix.rotate(config.angle, 0, 0, 1);
+// xformMatrix.setTranslate(0.8,0.1,0);
+// xformMatrix.rotate(config.angle, 0, 0, 1);
 
 
 
 gl.uniform4f(u_FragColor,1.0,0.0,0.0,1.0);
-gl.uniformMatrix4fv(u_ModelMatrix,false,xformMatrix.elements);
+// gl.uniformMatrix4fv(u_ModelMatrix,false,xformMatrix.elements);
 
 let arr = [
 
@@ -96,4 +126,4 @@ gl.vertexAttribPointer(a_Position,2,gl.FLOAT,false,0,0);
 
 gl.enableVertexAttribArray(a_Position);
 
-gl.drawArrays(gl.TRIANGLE_FAN,0,arr.length / 2);
+step();
