@@ -39,7 +39,7 @@ let fragmentshader = `
 
 const config = {
     angle:80,
-    angle_step:.45,
+    angle_step:45,
     current_angle:0,
 }
 
@@ -72,12 +72,15 @@ let lastTime = Date.now();
 let updateDeg = (cur) => {
     let now = Date.now();
     let elapsed = now - lastTime;
+    lastTime = now;
     let newAngle = cur + (elapsed /1000) * config.angle_step;
     return newAngle % 360;
 }
 
 let draw = (matrix,angle,ct) => {
-    matrix.setRotate(angle,0,0,1);
+
+    matrix.setTranslate(0.35,0,0);
+    matrix.rotate(angle,0,0,1);
 
     ct.uniformMatrix4fv(u_ModelMatrix, false, matrix.elements);
 
