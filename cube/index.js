@@ -29,6 +29,7 @@ class Main {
             const container = document.querySelector('.ani-container');
             scene = new THREE.Scene();
             camera = new THREE.PerspectiveCamera(45, SCREEN_WIDTH / SCREEN_HEIGHT, .1, 1000);
+            window.scene = scene;
             camera.position.z = 100;
             camera.position.x = 0;
             camera.position.y = 0;
