@@ -24,7 +24,9 @@
   },
   "devDependencies": {
     "blueimp-md5": "^2.10.0",
+    "christina": "^0.0.13",
     "eslint": "^4.12.1",
+    "three-trackballcontrols": "^0.0.7",
     "webpack": "^3.9.1",
     "webpack-dashboard": "^1.0.2",
     "webpack-dev-server": "^2.9.5"
