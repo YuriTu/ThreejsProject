@@ -73,7 +73,7 @@ module.exports = {
         new DashboardPlugin(),
         new webpack.ProvidePlugin({
             THREE: 'three',
-            TWEEN: 'tween.js',
+            TWEEN: '@tweenjs/tween.js',
             Stats: 'stats.js'
         })
         // new webpack.optimize.OccurrenceOrderPlugin(),

@@ -2,7 +2,7 @@
  * @file Describe the file
  * @author 涂强（tuqiang01）
  */
-import * as THREE from 'three';
+// import * as THREE from 'three';
 
 const SCREEN_WIDTH = window.innerWidth,
     SCREEN_HEIGHT = window.innerHeight;

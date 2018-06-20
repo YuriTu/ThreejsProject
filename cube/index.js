@@ -2,6 +2,7 @@ import * as THREE from 'three';
 import Status from 'stats.js';
 const stats = new Status();
 // import _ from "christina";
+import Physijs from './lib/physi'
 import TrackballControls from 'three-trackballcontrols';
 import {Animator} from "./animator";
 
@@ -10,6 +11,10 @@ const SCREEN_WIDTH = window.innerWidth,
 let windowHalfX = window.innerHeight / 2,
     windowHalfY = window.innerWidth / 2;
 let renderer,camera, scene;
+
+Physijs.scripts.worker = './lib/physijs_worker.js';
+Physijs.scripts.ammo = './lib/ammo.js';
+
 
 class Main {
     constructor(){
@@ -27,7 +32,9 @@ class Main {
             document.body.appendChild(stats.dom);
 
             const container = document.querySelector('.ani-container');
-            scene = new THREE.Scene();
+            // scene = new THREE.Scene();
+            scene = new Physijs.Scene();
+            scene.setGravity(new THREE.Vector3(0, -10 ,0));
             camera = new THREE.PerspectiveCamera(45, SCREEN_WIDTH / SCREEN_HEIGHT, .1, 1000);
             window.scene = scene;
             camera.position.z = 100;
