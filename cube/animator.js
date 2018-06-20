@@ -27,9 +27,9 @@ export class Animator {
         }
 
         this.generatePlane = () => {
-            let geo = new THREE.PlaneBufferGeometry(50,50);
+            let geo = new THREE.BoxBufferGeometry(50,5,50);
             let mat = new THREE.MeshBasicMaterial( {color: 0xffff00, side: THREE.DoubleSide} );
-            let plane = new THREE.Mesh(geo,mat);
+            let plane = new window.Physijs.BoxMesh(geo,mat);
             // plane.rotateX(- Math.PI / 3);
             plane.name = 'plane';
             this.group.add(plane);
@@ -37,16 +37,23 @@ export class Animator {
 
         this.generateBall = () => {
             let rad = 2;
-            let geo = new THREE.SphereBufferGeometry(rad,32,32);
+            // let geo = new THREE.SphereBufferGeometry(rad,32,32);
+            let geo = new THREE.BoxGeometry(0.6, 6, 2);
             // let geo = new THREE.SphereGeometry(rad,32,32);
-            let mat = new THREE.MeshBasicMaterial({color:'#ff0000'});
-            this.sphere = new THREE.Mesh(geo,mat);
-            this.sphere.translateZ(rad);
+            let mat = Physijs.createMaterial(new THREE.MeshPhongMaterial(
+                {
+                    color: "#5eaf5e",
+                    transparent: true, opacity: 0.8,
+//                            map: THREE.ImageUtils.loadTexture( '../assets/textures/general/darker_wood.jpg' )
+                }))
+            this.sphere = new window.Physijs.BoxMesh(geo,mat);
+            // this.sphere.translateZ(rad);
+            this.sphere.position.y = 20;
             this.group.add(this.sphere);
         }
 
         this.generateSide = () => {
-            let geo = new THREE.PlaneBufferGeometry(50,50);
+            let geo = new THREE.BoxBufferGeometry(50,50,5);
             let mat = new THREE.MeshBasicMaterial( {color: 0x0000ff, side: THREE.DoubleSide} );
             let positions = [{
                 x:-10,y:0,z:0
@@ -54,7 +61,7 @@ export class Animator {
                 x:10,y:0,z:0
             }]
             this.sideLis = positions.map(i => {
-                let plane = new THREE.Mesh(geo,mat);
+                let plane = new window.Physijs.BoxMesh(geo,mat);
                 plane.position.set(i.x,i.y,i.z);
                 plane.rotateY( Math.PI / 2)
                 this.group.add(plane);
@@ -127,7 +134,7 @@ export class Animator {
     }
 
     update(){
-        this.moveBall();
-        this.checkImpact();
+        // this.moveBall();
+        // this.checkImpact();
     }
 }

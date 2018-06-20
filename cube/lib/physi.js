@@ -1401,5 +1401,3 @@ window.Physijs = (function() {
 
 	return Physijs;
 })();
-
-module.export = Physijs;

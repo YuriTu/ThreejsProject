@@ -1,4 +1,4 @@
-import * as THREE from 'three';
+// import * as THREE from 'three';
 import Status from 'stats.js';
 const stats = new Status();
 // import _ from "christina";
@@ -12,8 +12,8 @@ let windowHalfX = window.innerHeight / 2,
     windowHalfY = window.innerWidth / 2;
 let renderer,camera, scene;
 
-Physijs.scripts.worker = './lib/physijs_worker.js';
-Physijs.scripts.ammo = './lib/ammo.js';
+window.Physijs.scripts.worker = './physijs_worker.js';
+window.Physijs.scripts.ammo = './ammo.js';
 
 
 class Main {
@@ -33,7 +33,7 @@ class Main {
 
             const container = document.querySelector('.ani-container');
             // scene = new THREE.Scene();
-            scene = new Physijs.Scene();
+            scene = new window.Physijs.Scene();
             scene.setGravity(new THREE.Vector3(0, -10 ,0));
             camera = new THREE.PerspectiveCamera(45, SCREEN_WIDTH / SCREEN_HEIGHT, .1, 1000);
             window.scene = scene;
@@ -92,6 +92,7 @@ class Main {
     render(){
         camera.lookAt(scene.position);
         renderer.render(scene,camera);
+        scene.simulate(undefined, 1);
 
     }
 }
