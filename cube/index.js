@@ -12,7 +12,7 @@ let windowHalfX = window.innerHeight / 2,
     windowHalfY = window.innerWidth / 2;
 let renderer,camera, scene;
 
-window.Physijs.scripts.worker = './physijs_worker.js';
+window.Physijs.scripts.worker = './lib/physijs_worker.js';
 window.Physijs.scripts.ammo = './ammo.js';
 
 
@@ -79,20 +79,17 @@ class Main {
         });
     }
     animate(){
+        requestAnimationFrame(this.animate.bind(this));
         stats.update();
         this.render();
         // _.raf(this.animate.bind(this));
         this.controls && this.controls.update();
         this.animator.update();
-
-        requestAnimationFrame(this.animate.bind(this));
-
-
     }
     render(){
         camera.lookAt(scene.position);
         renderer.render(scene,camera);
-        scene.simulate(undefined, 1);
+        scene.simulate();
 
     }
 }

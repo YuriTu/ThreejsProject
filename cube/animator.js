@@ -16,7 +16,7 @@ export class Animator {
     constructor(props){
         this.scene = props.scene;
 
-        this.group = new THREE.Group();
+        // this.group = new THREE.Group();
 
         this.lx = true;
         this.ly = true;
@@ -29,27 +29,22 @@ export class Animator {
         this.generatePlane = () => {
             let geo = new THREE.BoxBufferGeometry(50,5,50);
             let mat = new THREE.MeshBasicMaterial( {color: 0xffff00, side: THREE.DoubleSide} );
-            let plane = new window.Physijs.BoxMesh(geo,mat);
-            // plane.rotateX(- Math.PI / 3);
+            let plane = new window.Physijs.BoxMesh(geo,mat,0);
+            plane.rotateX(- Math.PI / 8);
             plane.name = 'plane';
-            this.group.add(plane);
+            this.scene.add(plane);
         }
 
         this.generateBall = () => {
             let rad = 2;
-            // let geo = new THREE.SphereBufferGeometry(rad,32,32);
-            let geo = new THREE.BoxGeometry(0.6, 6, 2);
+            let geo = new THREE.SphereBufferGeometry(rad,32,32);
+            // let geo = new THREE.BoxGeometry(0.6, 6, 2);
             // let geo = new THREE.SphereGeometry(rad,32,32);
-            let mat = Physijs.createMaterial(new THREE.MeshPhongMaterial(
-                {
-                    color: "#5eaf5e",
-                    transparent: true, opacity: 0.8,
-//                            map: THREE.ImageUtils.loadTexture( '../assets/textures/general/darker_wood.jpg' )
-                }))
+            let mat = new THREE.MeshBasicMaterial( {color: 0xff0000, side: THREE.DoubleSide} );
             this.sphere = new window.Physijs.BoxMesh(geo,mat);
             // this.sphere.translateZ(rad);
-            this.sphere.position.y = 20;
-            this.group.add(this.sphere);
+            this.sphere.position.y = 10;
+            this.scene.add(this.sphere);
         }
 
         this.generateSide = () => {
@@ -61,10 +56,10 @@ export class Animator {
                 x:10,y:0,z:0
             }]
             this.sideLis = positions.map(i => {
-                let plane = new window.Physijs.BoxMesh(geo,mat);
+                let plane = new window.Physijs.BoxMesh(geo,mat,0);
                 plane.position.set(i.x,i.y,i.z);
                 plane.rotateY( Math.PI / 2)
-                this.group.add(plane);
+                this.scene.add(plane);
                 return plane;
             })
 
@@ -127,7 +122,7 @@ export class Animator {
         this.generateBall();
         this.generateSide();
 
-        this.scene.add(this.group);
+        // this.scene.add(this.group);
 
         // this.setPosition();
 
