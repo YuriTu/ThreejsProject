@@ -33,7 +33,7 @@ class Main {
 
             const container = document.querySelector('.ani-container');
             // scene = new THREE.Scene();
-            scene = new window.Physijs.Scene();
+            scene = new window.Physijs.Scene({reportSize: 10, fixedTimeStep: 1 / 60});
             scene.setGravity(new THREE.Vector3(0, -10 ,0));
             camera = new THREE.PerspectiveCamera(45, SCREEN_WIDTH / SCREEN_HEIGHT, .1, 1000);
             window.scene = scene;
@@ -77,6 +77,7 @@ class Main {
         this.animator = new Animator({
             scene:scene
         });
+        scene.simulate();
     }
     animate(){
         requestAnimationFrame(this.animate.bind(this));
@@ -89,7 +90,7 @@ class Main {
     render(){
         camera.lookAt(scene.position);
         renderer.render(scene,camera);
-        scene.simulate();
+        scene.simulate(undefined,2);
 
     }
 }

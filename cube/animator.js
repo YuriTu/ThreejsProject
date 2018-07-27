@@ -21,7 +21,6 @@ export class Animator {
         this.lx = true;
         this.ly = true;
 
-
         this.config = {
             speed:.5,
         }
@@ -30,25 +29,44 @@ export class Animator {
             let geo = new THREE.BoxBufferGeometry(50,5,50);
             let mat = new THREE.MeshBasicMaterial( {color: 0xffff00, side: THREE.DoubleSide} );
             let plane = new window.Physijs.BoxMesh(geo,mat,0);
-            plane.rotateX(- Math.PI / 8);
+            // plane.rotateX(Math.PI / 8);
+            this.plane = plane;
             plane.name = 'plane';
             this.scene.add(plane);
         }
 
         this.generateBall = () => {
-            let rad = 2;
+            let rad = 2.5;
             let geo = new THREE.SphereBufferGeometry(rad,32,32);
-            // let geo = new THREE.BoxGeometry(0.6, 6, 2);
-            // let geo = new THREE.SphereGeometry(rad,32,32);
             let mat = new THREE.MeshBasicMaterial( {color: 0xff0000, side: THREE.DoubleSide} );
-            this.sphere = new window.Physijs.BoxMesh(geo,mat);
+            this.sphere = new window.Physijs.SphereMesh(
+                geo,
+                new window.Physijs.createMaterial(
+                    mat,0,0
+                ),
+                0);
+            // this.sphere = new window.Physijs.SphereMesh(geo,mat,0);
+            this.sphere.parent = window.scene;
+            let constraint = new window.Physijs.DOFConstraint(
+                this.sphere,this.plane,this.sphere.position
+            )
+
             // this.sphere.translateZ(rad);
-            this.sphere.position.y = 10;
+            // constraint.setAngularLowerLimit({x: 0, y: 0, z: 0});
+            // constraint.setAngularUpperLimit({x: 0, y: 0, z: 0});
+
+            this.sphere.position.y = 5;
             this.scene.add(this.sphere);
+            this.scene.addConstraint(constraint);
+            constraint.configureAngularMotor(2, 0.1, 10, 10, 1500);
+            constraint.setAngularLowerLimit({x: 0, y: 0.5, z: 0.1});
+            constraint.setAngularUpperLimit({x: 0, y: 0.5, z: 0});
+            constraint.enableAngularMotor(2);
+
         }
 
         this.generateSide = () => {
-            let geo = new THREE.BoxBufferGeometry(50,50,5);
+            let geo = new THREE.BoxBufferGeometry(5,50,50);
             let mat = new THREE.MeshBasicMaterial( {color: 0x0000ff, side: THREE.DoubleSide} );
             let positions = [{
                 x:-10,y:0,z:0
@@ -58,7 +76,7 @@ export class Animator {
             this.sideLis = positions.map(i => {
                 let plane = new window.Physijs.BoxMesh(geo,mat,0);
                 plane.position.set(i.x,i.y,i.z);
-                plane.rotateY( Math.PI / 2)
+                // plane.rotateY( Math.PI / 2)
                 this.scene.add(plane);
                 return plane;
             })
@@ -78,10 +96,12 @@ export class Animator {
         }
 
         this.moveBall = () => {
-            if (mouse.x && mouse.y){
-                this.lx && this.sphere.translateX( mouse.x * this.config.speed);
-                this.ly && this.sphere.translateY( mouse.y * this.config.speed);
-            }
+            // if (mouse.x && mouse.y){
+            //     this.lx && this.sphere.translateX( mouse.x * this.config.speed);
+            //     this.ly && this.sphere.translateY( mouse.y * this.config.speed);
+            //     this.sphere.__dirtyPosition = true;
+            //     // this.sphere.position.x += mouse.x * this.config.speed;
+            // }
         }
 
         this.checkImpact = () => {
@@ -119,9 +139,9 @@ export class Animator {
 
     generate(){
         this.generatePlane();
-        this.generateBall();
-        this.generateSide();
 
+        this.generateSide();
+        this.generateBall();
         // this.scene.add(this.group);
 
         // this.setPosition();
@@ -129,7 +149,7 @@ export class Animator {
     }
 
     update(){
-        // this.moveBall();
+        this.moveBall();
         // this.checkImpact();
     }
 }
