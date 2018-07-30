@@ -823,7 +823,6 @@ window.Physijs = (function() {
 
 	Physijs.Scene.prototype.add = function( object ) {
 		THREE.Mesh.prototype.add.call( this, object );
-
 		if ( object._physijs ) {
 
 			object.world = this;
@@ -889,6 +888,7 @@ window.Physijs = (function() {
 			THREE.Mesh.prototype.remove.call( this, object );
 			if ( object._physijs ) {
 				delete this._objects[object._physijs.id];
+
 				this.execute( 'removeObject', { id: object._physijs.id } );
 			}
 		}

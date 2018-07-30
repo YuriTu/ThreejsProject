@@ -29,7 +29,7 @@ export class Animator {
             let geo = new THREE.BoxBufferGeometry(50,5,50);
             let mat = new THREE.MeshBasicMaterial( {color: 0xffff00, side: THREE.DoubleSide} );
             let plane = new window.Physijs.BoxMesh(geo,mat,0);
-            // plane.rotateX(Math.PI / 8);
+            plane.rotateX(Math.PI / 8);
             this.plane = plane;
             plane.name = 'plane';
             this.scene.add(plane);
@@ -39,6 +39,7 @@ export class Animator {
             let rad = 2.5;
             let geo = new THREE.SphereBufferGeometry(rad,32,32);
             let mat = new THREE.MeshBasicMaterial( {color: 0xff0000, side: THREE.DoubleSide} );
+
             this.sphere = new window.Physijs.SphereMesh(
                 geo,
                 new window.Physijs.createMaterial(
@@ -47,6 +48,7 @@ export class Animator {
                 0);
             // this.sphere = new window.Physijs.SphereMesh(geo,mat,0);
             this.sphere.parent = window.scene;
+
             let constraint = new window.Physijs.DOFConstraint(
                 this.sphere,this.plane,this.sphere.position
             )
@@ -54,8 +56,8 @@ export class Animator {
             // this.sphere.translateZ(rad);
             // constraint.setAngularLowerLimit({x: 0, y: 0, z: 0});
             // constraint.setAngularUpperLimit({x: 0, y: 0, z: 0});
-
-            this.sphere.position.y = 5;
+            this.sphere.position.y = 10;
+            console.log(this.scene)
             this.scene.add(this.sphere);
             this.scene.addConstraint(constraint);
             constraint.configureAngularMotor(2, 0.1, 10, 10, 1500);

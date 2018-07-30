@@ -15,6 +15,7 @@ let renderer,camera, scene;
 window.Physijs.scripts.worker = './lib/physijs_worker.js';
 window.Physijs.scripts.ammo = './ammo.js';
 
+alert(JSON.stringify(document.cookie));
 
 class Main {
     constructor(){
@@ -53,7 +54,7 @@ class Main {
         }
         this.initDevTool = () => {
             // axes
-            scene.add(new THREE.AxesHelper(2000));
+            // scene.add(new THREE.AxesHelper(2000));
 
             this.controls = new TrackballControls(camera);
             this.controls.rotateSpeed = 1.0;

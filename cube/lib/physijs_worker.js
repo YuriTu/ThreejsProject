@@ -492,6 +492,9 @@ public_functions.applyEngineForce = function( details ) {
 };
 
 public_functions.removeObject = function( details ) {
+	if (!_objects[details.id] ){
+		return;
+	}
 	world.removeRigidBody( _objects[details.id] );
 	Ammo.destroy(_objects[details.id]);
 	Ammo.destroy(_motion_states[details.id]);
@@ -1409,6 +1412,8 @@ self.onmessage = function( event ) {
 
 	if ( event.data.cmd && public_functions[event.data.cmd] ) {
 		//if ( event.data.params.id !== undefined && _objects[event.data.params.id] === undefined && event.data.cmd !== 'addObject' && event.data.cmd !== 'registerMaterial' ) return;
+		if (event.data.cmd == 'removeObject'){
+		}
 		public_functions[event.data.cmd]( event.data.params );
 	}
 
