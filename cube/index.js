@@ -15,8 +15,15 @@ let renderer,camera, scene;
 window.Physijs.scripts.worker = './lib/physijs_worker.js';
 window.Physijs.scripts.ammo = './ammo.js';
 
-alert(JSON.stringify(document.cookie));
-
+// alert(JSON.stringify(document.cookie));
+// // // alert(!!BdHiJs?'has':'not');
+// // if (BdHiJs) {
+// //     alert('has');
+// // }
+window.onBdHiJsReady = function () {
+    alert(JSON.stringify(document.cookie));
+    alert(BdHiJs);
+};
 class Main {
     constructor(){
         this.antiResize = () => {
