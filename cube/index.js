@@ -1,4 +1,4 @@
-// import * as THREE from 'three';
+import * as WHS from 'whs';
 import Status from 'stats.js';
 const stats = new Status();
 // import _ from "christina";
@@ -15,94 +15,84 @@ let renderer,camera, scene;
 window.Physijs.scripts.worker = './lib/physijs_worker.js';
 window.Physijs.scripts.ammo = './ammo.js';
 
-// alert(JSON.stringify(document.cookie));
-// // // alert(!!BdHiJs?'has':'not');
-// // if (BdHiJs) {
-// //     alert('has');
-// // }
-window.onBdHiJsReady = function () {
-    alert(JSON.stringify(document.cookie));
-    alert(BdHiJs);
-};
+const opt = {
+    sides:{
+        conf:[{
+            position:[10,0,0]
+        },{
+            position:[-10,0,0]
+        }]
+
+    }
+
+}
+
 class Main {
     constructor(){
-        this.antiResize = () => {
-            window.addEventListener('resize',() => {
-                windowHalfX = window.innerWidth / 2;
-                windowHalfY = window.innerHeight / 2;
-                renderer.setSize(window.innerWidth,window.innerHeight);
-            },false)
+        this.buildSilde = () => {
+            opt.sides.conf.map((i) => {
+                new WHS.Box({
+                    geometry:{
+                        width:10,
+                        height:10,
+                        depth:100,
+                    },
+                    material: new THREE.MeshBasicMaterial({
+                        color: 0xffffff
+                    }),
+                    position:i.position
+                }).addTo(this.app)
+            })
         }
-
-        this.initScene = () =>{
-            // init stats
-            stats.showPanel(0);
-            document.body.appendChild(stats.dom);
-
-            const container = document.querySelector('.ani-container');
-            // scene = new THREE.Scene();
-            scene = new window.Physijs.Scene({reportSize: 10, fixedTimeStep: 1 / 60});
-            scene.setGravity(new THREE.Vector3(0, -10 ,0));
-            camera = new THREE.PerspectiveCamera(45, SCREEN_WIDTH / SCREEN_HEIGHT, .1, 1000);
-            window.scene = scene;
-            camera.position.z = 100;
-            camera.position.x = 0;
-            camera.position.y = 0;
-
-            renderer = new THREE.WebGLRenderer();
-            renderer.setSize(SCREEN_WIDTH,SCREEN_HEIGHT);
-            // 设置画布比例，防止 出现模糊画布
-            renderer.setPixelRatio( window.devicePixelRatio);
-            container.appendChild(renderer.domElement);
-            // scene.add()
-
-            this.antiResize();
-
-        }
-        this.initDevTool = () => {
-            // axes
-            // scene.add(new THREE.AxesHelper(2000));
-
-            this.controls = new TrackballControls(camera);
-            this.controls.rotateSpeed = 1.0;
-            this.controls.zoomSpeed = 1.2;
-            this.controls.panSpeed = 0.8;
-            this.controls.noZoom = false;
-            this.controls.noPan = false;
-            this.controls.staticMoving = true;
-            this.controls.dynamicDampingFactor = 0.3;
-            this.controls.keys = [65, 83, 68];
-            this.controls.addEventListener('change', () => {
-                this.render();
+        this.buildModule = () => {
+            const sphere = new WHS.Sphere({
+                geometry: {
+                    radius:3,
+                    widthSegments:32,
+                    heightSegments:32,
+                },
+                material:new THREE.MeshBasicMaterial({
+                    color: 0xF2F2F2
+                }),
+                position:new THREE.Vector3(0,5,0)
             });
-        };
-    }
+            sphere.addTo(this.app);
 
+            const plane = new WHS.Plane({
+                geometry: {
+                    width:100,
+                    height:100
+                },
+                material: new THREE.MeshBasicMaterial({color:0x447f8b}),
+                rotation:{
+                    x: -Math.PI / 2
+                }
+            }).addTo(this.app);
 
-    init (){
-        this.initScene();
-        this.initDevTool();
-        this.animator = new Animator({
-            scene:scene
-        });
-        scene.simulate();
+            this.buildSilde();
+        }
     }
-    animate(){
-        requestAnimationFrame(this.animate.bind(this));
-        stats.update();
-        this.render();
-        // _.raf(this.animate.bind(this));
-        this.controls && this.controls.update();
-        this.animator.update();
-    }
-    render(){
-        camera.lookAt(scene.position);
-        renderer.render(scene,camera);
-        scene.simulate(undefined,2);
+    init(){
+        this.app = new WHS.App([
+            new WHS.ElementModule(),
+            new WHS.SceneModule(),
 
+            new WHS.DefineModule('camera', new WHS.PerspectiveCamera({
+                position: new THREE.Vector3(10,10,75)
+            })),
+
+            new WHS.RenderingModule({bgColor:'#000'}),
+            new WHS.OrbitControlsModule(),
+            new WHS.ResizeModule()
+        ])
+        this.buildModule();
+    }
+    start(){
+        this.app.start();
     }
 }
 
 const m = new Main();
 m.init();
-m.animate();
+m.start();
+

@@ -48,11 +48,15 @@ class Main {
             ]);
         };
         this.createBuffer = (data,attrTarget,step) => {
+            // 创建
             let buf = ctx.createBuffer();
             ctx.bindBuffer(ctx.ARRAY_BUFFER,buf);
+            // 注入数据
             ctx.bufferData(ctx.ARRAY_BUFFER,data,ctx.STATIC_DRAW);
+            // 链接数据 分配对应的shader变量
             let location = ctx.getAttribLocation(ctx.program, attrTarget);
             ctx.vertexAttribPointer(location,step,ctx.FLOAT,false,0,0);
+            // 开启数据
             ctx.enableVertexAttribArray(location);
         }
     }
@@ -64,7 +68,7 @@ class Main {
     draw(){
         ctx.clearColor(0.0,0.0,0.0,1.0);
         ctx.clear(ctx.COLOR_BUFFER_BIT);
-        ctx.drawArrays(ctx.POINTS,1, 1);
+        ctx.drawArrays(ctx.POINTS,0, 3);
     }
 }
 
