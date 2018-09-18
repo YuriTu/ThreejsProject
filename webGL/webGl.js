@@ -29,9 +29,12 @@ let vertextshader = `
 `
 
 let fragmentshader = `
+    precision mediump float;
     varying vec4 v_Color;
+    uniform float u_Width;
+    uniform float u_Height; 
     void main() {
-        gl_FragColor = v_Color;
+        gl_FragColor = vec4(gl_FragCoord.x / u_Width, 0.0, gl_FragCoord.y / u_Height, 1.0);
     }
 `;
 let ctx;
@@ -43,8 +46,8 @@ class Main {
         this.initVertexBuffers = () => {
             this.vertex = new Float32Array([
                 0.0,0.5,10.0, 1.0, 0.0 , 0.0,
-                0.0,0.2,20.0, 0.0, 1.0 , 0.0,
-                0.0,-0.2,30.0, 0.0, 0.0 , 1.0,
+                -0.2,-0.5,20.0, 0.0, 1.0 , 0.0,
+                0.5,-0.5,30.0, 0.0, 0.0 , 1.0,
             ]);
             this.vSize = this.vertex.BYTES_PER_ELEMENT;
             this.times = this.vertex.length / 2;
@@ -64,13 +67,19 @@ class Main {
             let a_PointSize = ctx.getAttribLocation(ctx.program, 'a_PointSize');
             ctx.vertexAttribPointer(a_PointSize,1,ctx.FLOAT,false,this.vSize * 6,this.vSize * 2);
 
-            // let a_Color = ctx.getAttribLocation(ctx.program, 'a_Color');
-            // ctx.vertexAttribPointer(a_Color, 3, ctx.FLOAT, false, this.vSize * 6, this.vSize * 3);
+            let a_Color = ctx.getAttribLocation(ctx.program, 'a_Color');
+            ctx.vertexAttribPointer(a_Color, 3, ctx.FLOAT, false, this.vSize * 6, this.vSize * 3);
+
+            let u_Width = ctx.getUniformLocation(ctx.program, 'u_Width');
+            ctx.uniform1f(u_Width, ctx.drawingBufferWidth);
+
+            let u_Height = ctx.getUniformLocation(ctx.program, 'u_Height');
+            ctx.uniform1f(u_Height, ctx.drawingBufferHeight);
 
             // 开启数据
             ctx.enableVertexAttribArray(location);
             ctx.enableVertexAttribArray(a_PointSize);
-            // ctx.enableVertexAttribArray(a_Color);
+            ctx.enableVertexAttribArray(a_Color);
 
 
         }
@@ -83,7 +92,7 @@ class Main {
     draw(){
         ctx.clearColor(0.0,0.0,0.0,1.0);
         ctx.clear(ctx.COLOR_BUFFER_BIT);
-        ctx.drawArrays(ctx.POINTS,0, 3);
+        ctx.drawArrays(ctx.TRIANGLES,0, 3);
     }
 }
 
