@@ -18,12 +18,13 @@ canvas.height = SCREEN_HEIGHT;
 
 let vertextshader = `
     attribute vec4 a_Position;
-    attribute float a_PointSize;
+    //attribute float a_PointSize;
+    uniform mat4 u_ViewMatrix;
     attribute vec4 a_Color;
     varying vec4 v_Color;
     void main() {
-        gl_Position = a_Position;
-        gl_PointSize = a_PointSize;
+        gl_Position = a_Position * u_ViewMatrix;
+        //gl_PointSize = a_PointSize;
         v_Color = a_Color;
     }
 `
@@ -31,10 +32,10 @@ let vertextshader = `
 let fragmentshader = `
     precision mediump float;
     varying vec4 v_Color;
-    uniform float u_Width;
-    uniform float u_Height; 
+    //uniform float u_Width;
+    //uniform float u_Height; 
     void main() {
-        gl_FragColor = vec4(gl_FragCoord.x / u_Width, 0.0, gl_FragCoord.y / u_Height, 1.0);
+        gl_FragColor = v_Color;
     }
 `;
 let ctx;
@@ -45,14 +46,25 @@ class Main {
         initShaders(ctx,vertextshader,fragmentshader);
         this.initVertexBuffers = () => {
             this.vertex = new Float32Array([
-                0.0,0.5,10.0, 1.0, 0.0 , 0.0,
-                -0.2,-0.5,20.0, 0.0, 1.0 , 0.0,
-                0.5,-0.5,30.0, 0.0, 0.0 , 1.0,
+                0.0,  0.5,  -0.4,  0.4,  1.0,  0.4, // The back green one
+                -0.5,-0.5,  -0.4,  0.4,  1.0,  0.4,
+                0.5, -0.5,  -0.4,  1.0,  0.4,  0.4,
+
+                0.5,  0.4,  -0.2,  1.0,  0.4,  0.4, // The middle yellow one
+                -0.5, 0.4,  -0.2,  1.0,  1.0,  0.4,
+                0.0, -0.6,  -0.2,  1.0,  1.0,  0.4,
+
+                0.0,  0.5,   0.0,  0.4,  0.4,  1.0,  // The front blue one
+                -0.5, -0.5,  0.0,  0.4,  0.4,  1.0,
+                0.5, -0.5,   0.0,  1.0,  0.4,  0.4,
+                // 0.0,0.5,10.0, 1.0, 0.0 , 0.0,
+                // -0.2,-0.5,20.0, 0.0, 1.0 , 0.0,
+                // 0.5,-0.5,30.0, 0.0, 0.0 , 1.0,
             ]);
             this.vSize = this.vertex.BYTES_PER_ELEMENT;
             this.times = this.vertex.length / 2;
         };
-        this.createBuffer = (data,attrTarget,step) => {
+        this.createBuffer = (data,attrTarget) => {
             // 创建
             let buf = ctx.createBuffer();
             ctx.bindBuffer(ctx.ARRAY_BUFFER,buf);
@@ -63,22 +75,27 @@ class Main {
             // 告诉shader变量 缓冲区数据情况
             // 将绑定到gl.array_buffer 的缓冲区对象分配给由location
             // 指定的shader变量
-            ctx.vertexAttribPointer(location,step,ctx.FLOAT,false,this.vSize * 6,0);
-            let a_PointSize = ctx.getAttribLocation(ctx.program, 'a_PointSize');
-            ctx.vertexAttribPointer(a_PointSize,1,ctx.FLOAT,false,this.vSize * 6,this.vSize * 2);
+            ctx.vertexAttribPointer(location,3,ctx.FLOAT,false,this.vSize * 6,0);
+            // let a_PointSize = ctx.getAttribLocation(ctx.program, 'a_PointSize');
+            // ctx.vertexAttribPointer(a_PointSize,1,ctx.FLOAT,false,this.vSize * 6,this.vSize * 2);
 
             let a_Color = ctx.getAttribLocation(ctx.program, 'a_Color');
             ctx.vertexAttribPointer(a_Color, 3, ctx.FLOAT, false, this.vSize * 6, this.vSize * 3);
 
-            let u_Width = ctx.getUniformLocation(ctx.program, 'u_Width');
-            ctx.uniform1f(u_Width, ctx.drawingBufferWidth);
+            // let u_Width = ctx.getUniformLocation(ctx.program, 'u_Width');
+            // ctx.uniform1f(u_Width, ctx.drawingBufferWidth);
+            //
+            // let u_Height = ctx.getUniformLocation(ctx.program, 'u_Height');
+            // ctx.uniform1f(u_Height, ctx.drawingBufferHeight);
 
-            let u_Height = ctx.getUniformLocation(ctx.program, 'u_Height');
-            ctx.uniform1f(u_Height, ctx.drawingBufferHeight);
+            let u_ViewMatrix = ctx.getUniformLocation(ctx.program, 'u_ViewMatrix');
+            let viewMatrix = new Matrix4();
+            viewMatrix.setLookAt(1,0.1,1,0,0,0,0,1,0);
+            ctx.uniformMatrix4fv(u_ViewMatrix,false,viewMatrix.elements);
 
             // 开启数据
             ctx.enableVertexAttribArray(location);
-            ctx.enableVertexAttribArray(a_PointSize);
+            // ctx.enableVertexAttribArray(a_PointSize);
             ctx.enableVertexAttribArray(a_Color);
 
 
@@ -92,7 +109,7 @@ class Main {
     draw(){
         ctx.clearColor(0.0,0.0,0.0,1.0);
         ctx.clear(ctx.COLOR_BUFFER_BIT);
-        ctx.drawArrays(ctx.TRIANGLES,0, 3);
+        ctx.drawArrays(ctx.TRIANGLES,0, 9);
     }
 }
 
