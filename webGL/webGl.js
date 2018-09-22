@@ -20,10 +20,11 @@ let vertextshader = `
     attribute vec4 a_Position;
     //attribute float a_PointSize;
     uniform mat4 u_ViewMatrix;
+    uniform mat4 u_ModelMatrix;
     attribute vec4 a_Color;
     varying vec4 v_Color;
     void main() {
-        gl_Position = a_Position * u_ViewMatrix;
+        gl_Position = u_ModelMatrix * u_ViewMatrix * a_Position;
         //gl_PointSize = a_PointSize;
         v_Color = a_Color;
     }
@@ -92,6 +93,11 @@ class Main {
             let viewMatrix = new Matrix4();
             viewMatrix.setLookAt(1,0.1,1,0,0,0,0,1,0);
             ctx.uniformMatrix4fv(u_ViewMatrix,false,viewMatrix.elements);
+            debugger
+            let u_ModelMatrix = ctx.getUniformLocation(ctx.program, 'u_ModelMatrix');
+            let modelMatrix = new Matrix4();
+            modelMatrix.setRotate(-10,0,0,1);
+            ctx.uniformMatrix4fv(u_ModelMatrix, false, modelMatrix.elements);
 
             // 开启数据
             ctx.enableVertexAttribArray(location);
