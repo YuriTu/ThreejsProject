@@ -18,14 +18,13 @@ canvas.height = SCREEN_HEIGHT;
 
 let vertextshader = `
     attribute vec4 a_Position;
-    //attribute float a_PointSize;
-    uniform mat4 u_ViewMatrix;
-    uniform mat4 u_ModelMatrix;
+    //uniform mat4 u_ModelViewMatrix;
+    uniform mat4 u_ProjMatrix;
     attribute vec4 a_Color;
     varying vec4 v_Color;
     void main() {
-        gl_Position = u_ModelMatrix * u_ViewMatrix * a_Position;
-        //gl_PointSize = a_PointSize;
+        //gl_Position = u_ModelViewMatrix * a_Position;
+        gl_Position = u_ProjMatrix * a_Position;    
         v_Color = a_Color;
     }
 `
@@ -33,8 +32,6 @@ let vertextshader = `
 let fragmentshader = `
     precision mediump float;
     varying vec4 v_Color;
-    //uniform float u_Width;
-    //uniform float u_Height; 
     void main() {
         gl_FragColor = v_Color;
     }
@@ -43,27 +40,54 @@ let ctx;
 
 class Main {
     constructor(){
+        this.g_near = 0.0;
+        this.g_far = 0.5;
         ctx = canvas.getContext('webgl');
         initShaders(ctx,vertextshader,fragmentshader);
+
+        this.initHandel = () => {
+            document.addEventListener('keydown', (evt) => {
+                switch (evt.keyCode) {
+                    case 38:
+                        this.g_far += 0.01;
+                        break;
+                    case 40:
+                        this.g_far -=0.01;
+                        break;
+                    case 39:
+                        this.g_near += 0.01;
+                        break;
+                    case 37:
+                        this.g_near -= 0.01;
+                        break;
+                    default:
+                        return;
+                }
+                this.draw();
+            }
+            )
+        }
+
+        this.initDOM = () => {
+            this.text = document.querySelector('#far')
+        }
+
         this.initVertexBuffers = () => {
             this.vertex = new Float32Array([
-                0.0,  0.5,  -0.4,  0.4,  1.0,  0.4, // The back green one
-                -0.5,-0.5,  -0.4,  0.4,  1.0,  0.4,
-                0.5, -0.5,  -0.4,  1.0,  0.4,  0.4,
+                0.0,  0.6,  -0.4,  0.4,  1.0,  0.4, // The back green one
+                -0.5, -0.4,  -0.4,  0.4,  1.0,  0.4,
+                0.5, -0.4,  -0.4,  1.0,  0.4,  0.4,
 
                 0.5,  0.4,  -0.2,  1.0,  0.4,  0.4, // The middle yellow one
-                -0.5, 0.4,  -0.2,  1.0,  1.0,  0.4,
+                -0.5,  0.4,  -0.2,  1.0,  1.0,  0.4,
                 0.0, -0.6,  -0.2,  1.0,  1.0,  0.4,
 
-                0.0,  0.5,   0.0,  0.4,  0.4,  1.0,  // The front blue one
-                -0.5, -0.5,  0.0,  0.4,  0.4,  1.0,
+                0.0,  0.5,   0.0,  0.4,  0.4,  1.0, // The front blue one
+                -0.5, -0.5,   0.0,  0.4,  0.4,  1.0,
                 0.5, -0.5,   0.0,  1.0,  0.4,  0.4,
-                // 0.0,0.5,10.0, 1.0, 0.0 , 0.0,
-                // -0.2,-0.5,20.0, 0.0, 1.0 , 0.0,
-                // 0.5,-0.5,30.0, 0.0, 0.0 , 1.0,
             ]);
+            this.n = 9;
             this.vSize = this.vertex.BYTES_PER_ELEMENT;
-            this.times = this.vertex.length / 2;
         };
         this.createBuffer = (data,attrTarget) => {
             // 创建
@@ -77,27 +101,14 @@ class Main {
             // 将绑定到gl.array_buffer 的缓冲区对象分配给由location
             // 指定的shader变量
             ctx.vertexAttribPointer(location,3,ctx.FLOAT,false,this.vSize * 6,0);
-            // let a_PointSize = ctx.getAttribLocation(ctx.program, 'a_PointSize');
-            // ctx.vertexAttribPointer(a_PointSize,1,ctx.FLOAT,false,this.vSize * 6,this.vSize * 2);
 
             let a_Color = ctx.getAttribLocation(ctx.program, 'a_Color');
             ctx.vertexAttribPointer(a_Color, 3, ctx.FLOAT, false, this.vSize * 6, this.vSize * 3);
 
-            // let u_Width = ctx.getUniformLocation(ctx.program, 'u_Width');
-            // ctx.uniform1f(u_Width, ctx.drawingBufferWidth);
-            //
-            // let u_Height = ctx.getUniformLocation(ctx.program, 'u_Height');
-            // ctx.uniform1f(u_Height, ctx.drawingBufferHeight);
+            this.u_projMatrix = ctx.getUniformLocation(ctx.program, 'u_ProjMatrix');
+            this.projMatrix = new Matrix4();
 
-            let u_ViewMatrix = ctx.getUniformLocation(ctx.program, 'u_ViewMatrix');
-            let viewMatrix = new Matrix4();
-            viewMatrix.setLookAt(1,0.1,1,0,0,0,0,1,0);
-            ctx.uniformMatrix4fv(u_ViewMatrix,false,viewMatrix.elements);
-            debugger
-            let u_ModelMatrix = ctx.getUniformLocation(ctx.program, 'u_ModelMatrix');
-            let modelMatrix = new Matrix4();
-            modelMatrix.setRotate(-10,0,0,1);
-            ctx.uniformMatrix4fv(u_ModelMatrix, false, modelMatrix.elements);
+            ctx.uniformMatrix4fv(this.u_projMatrix, false, this.projMatrix.elements);
 
             // 开启数据
             ctx.enableVertexAttribArray(location);
@@ -107,15 +118,28 @@ class Main {
 
         }
     }
+    initRender(){
+        ctx.clearColor(0.0,0.0,0.0,1.0);
+    }
     init(){
         this.initVertexBuffers();
         this.createBuffer(this.vertex,'a_Position',2);
-        // this.createBuffer(this.size,'a_PointSize',1);
+        this.initHandel();
+        this.initDOM();
+        this.initRender();
     }
+
     draw(){
-        ctx.clearColor(0.0,0.0,0.0,1.0);
+        this.projMatrix.setOrtho(-1.0,1.0,-1.0,1.0,this.g_near,this.g_far);
+
+
+        ctx.uniformMatrix4fv(this.u_projMatrix, false, this.projMatrix.elements);
+
         ctx.clear(ctx.COLOR_BUFFER_BIT);
-        ctx.drawArrays(ctx.TRIANGLES,0, 9);
+
+        this.text.innerHTML = `near: ${Math.round(this.g_near * 100) / 100} ,far: ${Math.round(this.g_far * 100) / 100}`;
+
+        ctx.drawArrays(ctx.TRIANGLES,0, this.n);
     }
 }
 
