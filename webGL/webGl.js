@@ -18,13 +18,13 @@ canvas.height = SCREEN_HEIGHT;
 
 let vertextshader = `
     attribute vec4 a_Position;
-    //uniform mat4 u_ModelViewMatrix;
+    uniform mat4 u_viewMatrix;
     uniform mat4 u_ProjMatrix;
+    uniform mat4 u_ModelMatrix;
     attribute vec4 a_Color;
     varying vec4 v_Color;
     void main() {
-        //gl_Position = u_ModelViewMatrix * a_Position;
-        gl_Position = u_ProjMatrix * a_Position;    
+        gl_Position = u_ProjMatrix * u_viewMatrix * u_ModelMatrix  * a_Position;    
         v_Color = a_Color;
     }
 `
@@ -74,17 +74,19 @@ class Main {
 
         this.initVertexBuffers = () => {
             this.vertex = new Float32Array([
-                0.0,  0.6,  -0.4,  0.4,  1.0,  0.4, // The back green one
-                -0.5, -0.4,  -0.4,  0.4,  1.0,  0.4,
-                0.5, -0.4,  -0.4,  1.0,  0.4,  0.4,
 
-                0.5,  0.4,  -0.2,  1.0,  0.4,  0.4, // The middle yellow one
-                -0.5,  0.4,  -0.2,  1.0,  1.0,  0.4,
-                0.0, -0.6,  -0.2,  1.0,  1.0,  0.4,
+                0.0,  1.0,  -2.0,  1.0,  1.0,  0.4, // The middle yellow one
+                -0.5, -1.0,  -2.0,  1.0,  1.0,  0.4,
+                0.8, -1.0,  -2.0,  1.0,  0.4,  0.4,
 
-                0.0,  0.5,   0.0,  0.4,  0.4,  1.0, // The front blue one
-                -0.5, -0.5,   0.0,  0.4,  0.4,  1.0,
-                0.5, -0.5,   0.0,  1.0,  0.4,  0.4,
+                0.2,  1.0,  -2.0,  0.4,  1.0,  0.4, // The back green one
+                -0.5, -1.0,  -2.0,  0.4,  1.0,  0.4,
+                0.5, -1.0,  -2.0,  1.0,  0.4,  0.4,
+
+                //
+                0.0,  1.0,   -2.0,  0.4,  0.4,  1.0,  // The front blue one
+                -0.8, -1.0,   -2.0,  0.4,  0.4,  1.0,
+                0.5, -1.0,   -2.0,  1.0,  0.4,  0.4,
             ]);
             this.n = 9;
             this.vSize = this.vertex.BYTES_PER_ELEMENT;
@@ -106,16 +108,24 @@ class Main {
             ctx.vertexAttribPointer(a_Color, 3, ctx.FLOAT, false, this.vSize * 6, this.vSize * 3);
 
             this.u_projMatrix = ctx.getUniformLocation(ctx.program, 'u_ProjMatrix');
+            this.u_viewMatrix = ctx.getUniformLocation(ctx.program, "u_viewMatrix");
+            this.u_modelMatrix = ctx.getUniformLocation(ctx.program, 'u_ModelMatrix');
             this.projMatrix = new Matrix4();
+            this.viewMatrix = new Matrix4();
+            this.modelMatrix = new Matrix4();
+
+            this.viewMatrix.lookAt(0,0,5,0,0,-100,0,1,0);
+            this.projMatrix.setPerspective(30,SCREEN_WIDTH/SCREEN_HEIGHT,1,100);
+            this.modelMatrix.setTranslate(0.75,0,0);
 
             ctx.uniformMatrix4fv(this.u_projMatrix, false, this.projMatrix.elements);
+            ctx.uniformMatrix4fv(this.u_viewMatrix, false, this.viewMatrix.elements);
+            ctx.uniformMatrix4fv(this.u_modelMatrix, false, this.modelMatrix.elements);
 
             // 开启数据
             ctx.enableVertexAttribArray(location);
             // ctx.enableVertexAttribArray(a_PointSize);
             ctx.enableVertexAttribArray(a_Color);
-
-
         }
     }
     initRender(){
@@ -123,21 +133,34 @@ class Main {
     }
     init(){
         this.initVertexBuffers();
-        this.createBuffer(this.vertex,'a_Position',2);
-        this.initHandel();
+        this.createBuffer(this.vertex,'a_Position');
+        // this.initHandel();
         this.initDOM();
         this.initRender();
     }
 
     draw(){
-        this.projMatrix.setOrtho(-1.0,1.0,-1.0,1.0,this.g_near,this.g_far);
-
-
-        ctx.uniformMatrix4fv(this.u_projMatrix, false, this.projMatrix.elements);
+        // this.projMatrix.setOrtho(-1.0 ,1.0,-1.0,1.0,this.g_near,this.g_far);
+        //
+        //
+        // ctx.uniformMatrix4fv(this.u_projMatrix, false, this.projMatrix.elements);
 
         ctx.clear(ctx.COLOR_BUFFER_BIT);
 
-        this.text.innerHTML = `near: ${Math.round(this.g_near * 100) / 100} ,far: ${Math.round(this.g_far * 100) / 100}`;
+        ctx.enable(ctx.DEPTH_TEST);
+        ctx.enable(ctx.POLYGON_OFFSET_UNITS);
+
+        ctx.polygonOffset(1.0, 1.0);
+
+        ctx.clear(ctx.COLOR_BUFFER_BIT | ctx.DEPTH_BUFFER_BIT);
+
+        ctx.drawArrays(ctx.TRIANGLES,0,this.n);
+
+        this.modelMatrix.setTranslate(-0.75, 0,0);
+
+        ctx.uniformMatrix4fv(this.u_modelMatrix, false, this.modelMatrix.elements);
+
+        // this.text.innerHTML = `near: ${Math.round(this.g_near * 100) / 100} ,far: ${Math.round(this.g_far * 100) / 100}`;
 
         ctx.drawArrays(ctx.TRIANGLES,0, this.n);
     }
