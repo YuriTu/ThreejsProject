@@ -18,13 +18,11 @@ canvas.height = SCREEN_HEIGHT;
 
 let vertextshader = `
     attribute vec4 a_Position;
-    uniform mat4 u_viewMatrix;
-    uniform mat4 u_ProjMatrix;
-    uniform mat4 u_ModelMatrix;
+    uniform mat4 u_MvpMatrix;
     attribute vec4 a_Color;
     varying vec4 v_Color;
     void main() {
-        gl_Position = u_ProjMatrix * u_viewMatrix * u_ModelMatrix  * a_Position;    
+        gl_Position = u_MvpMatrix  * a_Position;    
         v_Color = a_Color;
     }
 `
@@ -36,133 +34,98 @@ let fragmentshader = `
         gl_FragColor = v_Color;
     }
 `;
-let ctx;
+let gl;
 
 class Main {
     constructor(){
-        this.g_near = 0.0;
-        this.g_far = 0.5;
-        ctx = canvas.getContext('webgl');
-        initShaders(ctx,vertextshader,fragmentshader);
-
-        this.initHandel = () => {
-            document.addEventListener('keydown', (evt) => {
-                switch (evt.keyCode) {
-                    case 38:
-                        this.g_far += 0.01;
-                        break;
-                    case 40:
-                        this.g_far -=0.01;
-                        break;
-                    case 39:
-                        this.g_near += 0.01;
-                        break;
-                    case 37:
-                        this.g_near -= 0.01;
-                        break;
-                    default:
-                        return;
-                }
-                this.draw();
-            }
-            )
-        }
+        gl = canvas.getContext('webgl');
+        initShaders(gl,vertextshader,fragmentshader);
 
         this.initDOM = () => {
             this.text = document.querySelector('#far')
         }
 
         this.initVertexBuffers = () => {
-            this.vertex = new Float32Array([
-
-                0.0,  1.0,  -2.0,  1.0,  1.0,  0.4, // The middle yellow one
-                -0.5, -1.0,  -2.0,  1.0,  1.0,  0.4,
-                0.8, -1.0,  -2.0,  1.0,  0.4,  0.4,
-
-                0.2,  1.0,  -2.0,  0.4,  1.0,  0.4, // The back green one
-                -0.5, -1.0,  -2.0,  0.4,  1.0,  0.4,
-                0.5, -1.0,  -2.0,  1.0,  0.4,  0.4,
-
-                //
-                0.0,  1.0,   -2.0,  0.4,  0.4,  1.0,  // The front blue one
-                -0.8, -1.0,   -2.0,  0.4,  0.4,  1.0,
-                0.5, -1.0,   -2.0,  1.0,  0.4,  0.4,
+            this.verticesColors = new Float32Array([
+                // Vertex coordinates and color
+                1.0,  1.0,  1.0,     1.0,  1.0,  1.0,  // v0 White
+                -1.0,  1.0,  1.0,     1.0,  0.0,  1.0,  // v1 Magenta
+                -1.0, -1.0,  1.0,     1.0,  0.0,  0.0,  // v2 Red
+                1.0, -1.0,  1.0,     1.0,  1.0,  0.0,  // v3 Yellow
+                1.0, -1.0, -1.0,     0.0,  1.0,  0.0,  // v4 Green
+                1.0,  1.0, -1.0,     0.0,  1.0,  1.0,  // v5 Cyan
+                -1.0,  1.0, -1.0,     0.0,  0.0,  1.0,  // v6 Blue
+                -1.0, -1.0, -1.0,     0.0,  0.0,  0.0   // v7 Black
             ]);
-            this.n = 9;
-            this.vSize = this.vertex.BYTES_PER_ELEMENT;
+            this.indices = new Uint8Array([
+                0, 1, 2,   0, 2, 3,    // front
+                0, 3, 4,   0, 4, 5,    // right
+                0, 5, 6,   0, 6, 1,    // up
+                1, 6, 7,   1, 7, 2,    // left
+                7, 4, 3,   7, 3, 2,    // down
+                4, 7, 6,   4, 6, 5     // back
+            ]);
+            this.n = this.indices.length;
+            this.vSize = this.verticesColors.BYTES_PER_ELEMENT;
         };
-        this.createBuffer = (data,attrTarget) => {
+        this.createBuffer = () => {
             // 创建
-            let buf = ctx.createBuffer();
-            ctx.bindBuffer(ctx.ARRAY_BUFFER,buf);
+            let vertexColorBuffer  = gl.createBuffer();
+            let indexBuffer = gl.createBuffer();
             // 注入数据
-            ctx.bufferData(ctx.ARRAY_BUFFER,data,ctx.STATIC_DRAW);
+            gl.bindBuffer(gl.ARRAY_BUFFER, vertexColorBuffer);
+            gl.bufferData(gl.ARRAY_BUFFER,this.verticesColors,gl.STATIC_DRAW);
             // 把缓冲区 分配对应的shader变量
-            let location = ctx.getAttribLocation(ctx.program, attrTarget);
+            let location = gl.getAttribLocation(gl.program, 'a_Position');
             // 告诉shader变量 缓冲区数据情况
             // 将绑定到gl.array_buffer 的缓冲区对象分配给由location
             // 指定的shader变量
-            ctx.vertexAttribPointer(location,3,ctx.FLOAT,false,this.vSize * 6,0);
+            gl.vertexAttribPointer(location,3,gl.FLOAT,false,this.vSize * 6,0);
 
-            let a_Color = ctx.getAttribLocation(ctx.program, 'a_Color');
-            ctx.vertexAttribPointer(a_Color, 3, ctx.FLOAT, false, this.vSize * 6, this.vSize * 3);
+            let a_Color = gl.getAttribLocation(gl.program, 'a_Color');
+            gl.vertexAttribPointer(a_Color, 3, gl.FLOAT, false, this.vSize * 6, this.vSize * 3);
 
-            this.u_projMatrix = ctx.getUniformLocation(ctx.program, 'u_ProjMatrix');
-            this.u_viewMatrix = ctx.getUniformLocation(ctx.program, "u_viewMatrix");
-            this.u_modelMatrix = ctx.getUniformLocation(ctx.program, 'u_ModelMatrix');
-            this.projMatrix = new Matrix4();
-            this.viewMatrix = new Matrix4();
-            this.modelMatrix = new Matrix4();
+            this.u_MvpMatrix = gl.getUniformLocation(gl.program, 'u_MvpMatrix');
+            this.mvpMatrix = new Matrix4();
 
-            this.viewMatrix.lookAt(0,0,5,0,0,-100,0,1,0);
-            this.projMatrix.setPerspective(30,SCREEN_WIDTH/SCREEN_HEIGHT,1,100);
-            this.modelMatrix.setTranslate(0.75,0,0);
+            this.mvpMatrix.setPerspective(30,SCREEN_WIDTH/SCREEN_HEIGHT,1,100);
+            this.mvpMatrix.lookAt(3,3,7,0,0,0,0,1,0);
 
-            ctx.uniformMatrix4fv(this.u_projMatrix, false, this.projMatrix.elements);
-            ctx.uniformMatrix4fv(this.u_viewMatrix, false, this.viewMatrix.elements);
-            ctx.uniformMatrix4fv(this.u_modelMatrix, false, this.modelMatrix.elements);
+
+            gl.uniformMatrix4fv(this.u_MvpMatrix, false, this.mvpMatrix.elements);
 
             // 开启数据
-            ctx.enableVertexAttribArray(location);
-            // ctx.enableVertexAttribArray(a_PointSize);
-            ctx.enableVertexAttribArray(a_Color);
+            gl.enableVertexAttribArray(location);
+            gl.enableVertexAttribArray(a_Color);
+
+            // 开始处理链接方式坐标map
+            gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, indexBuffer);
+            gl.bufferData(gl.ELEMENT_ARRAY_BUFFER,this.indices, gl.STATIC_DRAW);
         }
     }
     initRender(){
-        ctx.clearColor(0.0,0.0,0.0,1.0);
+        gl.clearColor(0.0,0.0,0.0,1.0);
     }
     init(){
         this.initVertexBuffers();
-        this.createBuffer(this.vertex,'a_Position');
-        // this.initHandel();
+        this.createBuffer();
         this.initDOM();
         this.initRender();
     }
 
     draw(){
-        // this.projMatrix.setOrtho(-1.0 ,1.0,-1.0,1.0,this.g_near,this.g_far);
-        //
-        //
-        // ctx.uniformMatrix4fv(this.u_projMatrix, false, this.projMatrix.elements);
 
-        ctx.clear(ctx.COLOR_BUFFER_BIT);
+        gl.clear(gl.COLOR_BUFFER_BIT);
 
-        ctx.enable(ctx.DEPTH_TEST);
-        ctx.enable(ctx.POLYGON_OFFSET_UNITS);
+        gl.enable(gl.DEPTH_TEST);
+        gl.enable(gl.POLYGON_OFFSET_UNITS);
 
-        ctx.polygonOffset(1.0, 1.0);
+        gl.polygonOffset(1.0, 1.0);
 
-        ctx.clear(ctx.COLOR_BUFFER_BIT | ctx.DEPTH_BUFFER_BIT);
+        gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
 
-        ctx.drawArrays(ctx.TRIANGLES,0,this.n);
-
-        this.modelMatrix.setTranslate(-0.75, 0,0);
-
-        ctx.uniformMatrix4fv(this.u_modelMatrix, false, this.modelMatrix.elements);
-
-        // this.text.innerHTML = `near: ${Math.round(this.g_near * 100) / 100} ,far: ${Math.round(this.g_far * 100) / 100}`;
-
-        ctx.drawArrays(ctx.TRIANGLES,0, this.n);
+        // gl.drawArrays(gl.TRIANGLES,0, this.n);
+        gl.drawElements(gl.TRIANGLES, this.n , gl.UNSIGNED_BYTE, 0);
     }
 }
 
