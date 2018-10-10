@@ -24,6 +24,7 @@ let vertextshader = `
     uniform mat4 u_MvpMatrix;
     uniform vec3 u_LightColor;
     uniform vec3 u_LightDirection;
+    uniform vec3 u_AmbientLight;
     
     varying vec4 v_Color;
     void main() {
@@ -31,7 +32,10 @@ let vertextshader = `
         vec3 normal = normalize( vec3 (a_Normal) );    
         float nDotL = max( dot(u_LightDirection, normal) , 0.0);
         vec3 diffuse = u_LightColor * vec3(a_Color) * nDotL;
-        v_Color = vec4(diffuse, a_Color.a);
+        
+        vec3 ambient = u_AmientLight * a_Color.rgb;
+        
+        v_Color = vec4(diffuse + ambient, a_Color.a);
     }
 `
 
@@ -106,6 +110,7 @@ class Main {
             let u_MvpMatrix = gl.getUniformLocation(gl.program, 'u_MvpMatrix');
             let u_LightColor = gl.getUniformLocation(gl.program, 'u_LightColor');
             let u_LightDirection = gl.getUniformLocation(gl.program, 'u_LightDirection');
+            let u_AmbientLight = gl.getUniformLocation(gl.program, 'u_AmbientLight');
 
             let mvpMatrix = new Matrix4();
             mvpMatrix.setPerspective(30, SCREEN_WIDTH / SCREEN_HEIGHT, 1, 100);
@@ -118,6 +123,9 @@ class Main {
             let lightDirection = new Vector3([0.5, 3.0, 4.0]);
             lightDirection.normalize();
             gl.uniform3fv(u_LightDirection, lightDirection.elements);
+
+            // set ambient light
+            gl.uniform3f(u_AmbientLight, 0.2,0.2,0.2);
 
 
 
