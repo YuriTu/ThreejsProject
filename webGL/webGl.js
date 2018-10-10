@@ -33,7 +33,7 @@ let vertextshader = `
         float nDotL = max( dot(u_LightDirection, normal) , 0.0);
         vec3 diffuse = u_LightColor * vec3(a_Color) * nDotL;
         
-        vec3 ambient = u_AmientLight * a_Color.rgb;
+        vec3 ambient = u_AmbientLight * a_Color.rgb;
         
         v_Color = vec4(diffuse + ambient, a_Color.a);
     }
