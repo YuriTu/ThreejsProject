@@ -21,6 +21,7 @@ let vertextshader = `
     attribute vec4 a_Color;
     attribute vec4 a_Normal;
     
+    uniform mat4 u_NormalMatrix;
     uniform mat4 u_MvpMatrix;
     uniform vec3 u_LightColor;
     uniform vec3 u_LightDirection;
@@ -29,7 +30,7 @@ let vertextshader = `
     varying vec4 v_Color;
     void main() {
         gl_Position = u_MvpMatrix  * a_Position;
-        vec3 normal = normalize( vec3 (a_Normal) );    
+        vec3 normal = normalize( vec3 (u_NormalMatrix * a_Normal) );    
         float nDotL = max( dot(u_LightDirection, normal) , 0.0);
         vec3 diffuse = u_LightColor * vec3(a_Color) * nDotL;
         
@@ -111,11 +112,24 @@ class Main {
             let u_LightColor = gl.getUniformLocation(gl.program, 'u_LightColor');
             let u_LightDirection = gl.getUniformLocation(gl.program, 'u_LightDirection');
             let u_AmbientLight = gl.getUniformLocation(gl.program, 'u_AmbientLight');
+            let u_NormalMatrix = gl.getUniformLocation(gl.program, 'u_NormalMatrix');
 
             let mvpMatrix = new Matrix4();
             mvpMatrix.setPerspective(30, SCREEN_WIDTH / SCREEN_HEIGHT, 1, 100);
             mvpMatrix.lookAt(5,5,5, 0,0,0, 0,1,0);
             gl.uniformMatrix4fv(u_MvpMatrix, false, mvpMatrix.elements);
+
+            let modelMatrix = new Matrix4();
+            let normalMatrix = new Matrix4();
+
+            modelMatrix.setTranslate(0, 1, 0);
+            modelMatrix.rotate( 90, 0 , 0, 1);
+
+            mvpMatrix.multiply(modelMatrix);
+
+            normalMatrix.setInverseOf(modelMatrix);
+            normalMatrix.transpose();
+            gl.uniformMatrix4fv(u_NormalMatrix, false, normalMatrix.elements);
 
             // set light color
             gl.uniform3f(u_LightColor, 1.0, 1.0, 1.0);
