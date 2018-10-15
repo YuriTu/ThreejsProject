@@ -22,16 +22,24 @@ let vertextshader = `
     attribute vec4 a_Normal;
     
     uniform mat4 u_NormalMatrix;
+    uniform mat4 u_ModelMatrix;
     uniform mat4 u_MvpMatrix;
     uniform vec3 u_LightColor;
-    uniform vec3 u_LightDirection;
+    uniform vec3 u_LightPosition;
     uniform vec3 u_AmbientLight;
     
     varying vec4 v_Color;
     void main() {
         gl_Position = u_MvpMatrix  * a_Position;
-        vec3 normal = normalize( vec3 (u_NormalMatrix * a_Normal) );    
-        float nDotL = max( dot(u_LightDirection, normal) , 0.0);
+        
+        vec3 normal = normalize( vec3 (u_NormalMatrix * a_Normal) );
+        
+        vec4 vertexPosition = u_ModelMatrix * a_Position;
+        
+        vec3 lightDirection = normalize(u_LightPosition - vec3(vertexPosition));
+        
+        float nDotL = max(dot (lightDirection, normal ), 0.0);
+        
         vec3 diffuse = u_LightColor * vec3(a_Color) * nDotL;
         
         vec3 ambient = u_AmbientLight * a_Color.rgb;
@@ -109,21 +117,22 @@ class Main {
             this.initArrayBuffer(this.normals, 3, gl.FLOAT, 'a_Normal');
             //
             let u_MvpMatrix = gl.getUniformLocation(gl.program, 'u_MvpMatrix');
+            let u_ModelMatrix = gl.getUniformLocation(gl.program, 'u_ModelMatrix');
             let u_LightColor = gl.getUniformLocation(gl.program, 'u_LightColor');
-            let u_LightDirection = gl.getUniformLocation(gl.program, 'u_LightDirection');
+            let u_LightPosition = gl.getUniformLocation(gl.program, 'u_LightPosition');
             let u_AmbientLight = gl.getUniformLocation(gl.program, 'u_AmbientLight');
             let u_NormalMatrix = gl.getUniformLocation(gl.program, 'u_NormalMatrix');
 
             let mvpMatrix = new Matrix4();
             mvpMatrix.setPerspective(30, SCREEN_WIDTH / SCREEN_HEIGHT, 1, 100);
-            mvpMatrix.lookAt(5,5,5, 0,0,0, 0,1,0);
+            mvpMatrix.lookAt(6,6,14, 0,0,0, 0,1,0);
             gl.uniformMatrix4fv(u_MvpMatrix, false, mvpMatrix.elements);
 
             let modelMatrix = new Matrix4();
             let normalMatrix = new Matrix4();
 
-            modelMatrix.setTranslate(0, 1, 0);
-            modelMatrix.rotate( 90, 0 , 0, 1);
+            modelMatrix.setRotate( 90, 0 , 1, 0);
+            gl.uniformMatrix4fv(u_ModelMatrix, false, modelMatrix.elements);
 
             mvpMatrix.multiply(modelMatrix);
 
@@ -134,9 +143,10 @@ class Main {
             // set light color
             gl.uniform3f(u_LightColor, 1.0, 1.0, 1.0);
             // light direction
-            let lightDirection = new Vector3([0.5, 3.0, 4.0]);
-            lightDirection.normalize();
-            gl.uniform3fv(u_LightDirection, lightDirection.elements);
+            gl.uniform3f(u_LightPosition, 2.3,4.0,3.5);
+            // let lightPosition = new Vector3([0.0, 3.0, 4.0]);
+            // lightPosition.normalize();
+            // gl.uniform3fv(u_LightPosition, lightPosition.elements);
 
             // set ambient light
             gl.uniform3f(u_AmbientLight, 0.2,0.2,0.2);
