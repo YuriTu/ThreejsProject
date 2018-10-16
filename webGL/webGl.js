@@ -24,35 +24,39 @@ let vertextshader = `
     uniform mat4 u_NormalMatrix;
     uniform mat4 u_ModelMatrix;
     uniform mat4 u_MvpMatrix;
-    uniform vec3 u_LightColor;
-    uniform vec3 u_LightPosition;
-    uniform vec3 u_AmbientLight;
+    
+
     
     varying vec4 v_Color;
+    varying vec3 v_Normal;
+    varying vec3 v_Position;
     void main() {
-        gl_Position = u_MvpMatrix  * a_Position;
-        
-        vec3 normal = normalize( vec3 (u_NormalMatrix * a_Normal) );
-        
-        vec4 vertexPosition = u_ModelMatrix * a_Position;
-        
-        vec3 lightDirection = normalize(u_LightPosition - vec3(vertexPosition));
-        
-        float nDotL = max(dot (lightDirection, normal ), 0.0);
-        
-        vec3 diffuse = u_LightColor * vec3(a_Color) * nDotL;
-        
-        vec3 ambient = u_AmbientLight * a_Color.rgb;
-        
-        v_Color = vec4(diffuse + ambient, a_Color.a);
+        gl_Position = u_MvpMatrix * a_Position;
+        v_Position = vec3(u_ModelMatrix * a_Position);
+        v_Normal = normalize(vec3 (u_NormalMatrix * a_Normal));
+        v_Color = a_Color;
     }
 `
 
 let fragmentshader = `
     precision mediump float;
+    
     varying vec4 v_Color;
+    varying vec3 v_Normal;
+    varying vec3 v_Position;
+    
+    
+    uniform vec3 u_LightColor;
+    uniform vec3 u_LightPosition;
+    uniform vec3 u_AmbientLight;
+    
     void main() {
-        gl_FragColor = v_Color;
+        vec3 normal = normalize(v_Normal);
+        vec3 lightDirection = normalize(u_LightPosition - v_Position);
+        float nDotL = max ( dot (lightDirection, normal), 0.0);
+        vec3 diffuse = u_LightColor * v_Color.rgb * nDotL;
+        vec3 ambient = u_AmbientLight * v_Color.rgb;
+        gl_FragColor = vec4(diffuse + ambient, v_Color.a);
     }
 `;
 let gl;
