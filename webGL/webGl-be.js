@@ -18,35 +18,49 @@ canvas.height = SCREEN_HEIGHT;
 
 let vertextshader = `
     attribute vec4 a_Position;
+    attribute vec4 a_Color;
+    attribute vec4 a_Normal;
+    
+    uniform mat4 u_NormalMatrix;
+    uniform mat4 u_ModelMatrix;
     uniform mat4 u_MvpMatrix;
+    
+
+    
+    varying vec4 v_Color;
+    varying vec3 v_Normal;
+    varying vec3 v_Position;
     void main() {
         gl_Position = u_MvpMatrix * a_Position;
+        v_Position = vec3(u_ModelMatrix * a_Position);
+        v_Normal = normalize(vec3 (u_NormalMatrix * a_Normal));
+        v_Color = a_Color;
     }
 `
 
 let fragmentshader = `
     precision mediump float;
     
-    uniform float u_Width;
-    uniform float u_Height;
+    varying vec4 v_Color;
+    varying vec3 v_Normal;
+    varying vec3 v_Position;
     
-    uniform float u_isTime;
     
+    uniform vec3 u_LightColor;
+    uniform vec3 u_LightPosition;
+    uniform vec3 u_AmbientLight;
     
     void main() {
-        vec3 iResolution = vec3(u_Width, u_Height, 1.0);
-        vec2 fragCoord = vec2(gl_FragCoord.x , gl_FragCoord.y);
-        
-        vec2 uv = fragCoord / iResolution.xy;
-        
-        
-        vec3 col = 0.5 + 0.5*cos(u_isTime+uv.xyx+vec3(0,2,4));
-        
-        gl_FragColor = vec4(col, 1.0);
+        vec3 normal = normalize(v_Normal);
+        vec3 lightDirection = normalize(u_LightPosition - v_Position);
+        float nDotL = max ( dot (lightDirection, normal), 0.0);
+        vec3 diffuse = u_LightColor * v_Color.rgb * nDotL;
+        vec3 ambient = u_AmbientLight * v_Color.rgb;
+        gl_FragColor = vec4(diffuse + ambient, v_Color.a);
     }
 `;
 let gl;
-let time = 1.0;
+
 class Main {
     constructor(){
         gl = canvas.getContext('webgl');
@@ -56,15 +70,35 @@ class Main {
         this.initVertexBuffers = () => {
             this.vertices = new Float32Array([
                 1.0, 1.0, 1.0,  -1.0, 1.0, 1.0,  -1.0,-1.0, 1.0,   1.0,-1.0, 1.0,  // v0-v1-v2-v3 front
+                1.0, 1.0, 1.0,   1.0,-1.0, 1.0,   1.0,-1.0,-1.0,   1.0, 1.0,-1.0,  // v0-v3-v4-v5 right
+                1.0, 1.0, 1.0,   1.0, 1.0,-1.0,  -1.0, 1.0,-1.0,  -1.0, 1.0, 1.0,  // v0-v5-v6-v1 up
+                -1.0, 1.0, 1.0,  -1.0, 1.0,-1.0,  -1.0,-1.0,-1.0,  -1.0,-1.0, 1.0,  // v1-v6-v7-v2 left
+                -1.0,-1.0,-1.0,   1.0,-1.0,-1.0,   1.0,-1.0, 1.0,  -1.0,-1.0, 1.0,  // v7-v4-v3-v2 down
+                1.0,-1.0,-1.0,  -1.0,-1.0,-1.0,  -1.0, 1.0,-1.0,   1.0, 1.0,-1.0   // v4-v7-v6-v5 back
             ]);
             this.colors = new Float32Array([
                 1, 0, 0,   1, 0, 0,   1, 0, 0,  1, 0, 0,     // v0-v1-v2-v3 front
+                1, 0, 0,   1, 0, 0,   1, 0, 0,  1, 0, 0,     // v0-v3-v4-v5 right
+                1, 0, 0,   1, 0, 0,   1, 0, 0,  1, 0, 0,     // v0-v5-v6-v1 up
+                1, 0, 0,   1, 0, 0,   1, 0, 0,  1, 0, 0,     // v1-v6-v7-v2 left
+                1, 0, 0,   1, 0, 0,   1, 0, 0,  1, 0, 0,     // v7-v4-v3-v2 down
+                1, 0, 0,   1, 0, 0,   1, 0, 0,  1, 0, 0　    // v4-v7-v6-v5 back
             ])
             this.indices = new Uint8Array([
                 0, 1, 2,   0, 2, 3,    // front
+                4, 5, 6,   4, 6, 7,    // right
+                8, 9,10,   8,10,11,    // up
+                12,13,14,  12,14,15,    // left
+                16,17,18,  16,18,19,    // down
+                20,21,22,  20,22,23     // back
             ]);
             this.normals = new Float32Array([
                 0.0, 0.0, 1.0,   0.0, 0.0, 1.0,   0.0, 0.0, 1.0,   0.0, 0.0, 1.0,  // v0-v1-v2-v3 front
+                1.0, 0.0, 0.0,   1.0, 0.0, 0.0,   1.0, 0.0, 0.0,   1.0, 0.0, 0.0,  // v0-v3-v4-v5 right
+                0.0, 1.0, 0.0,   0.0, 1.0, 0.0,   0.0, 1.0, 0.0,   0.0, 1.0, 0.0,  // v0-v5-v6-v1 up
+                -1.0, 0.0, 0.0,  -1.0, 0.0, 0.0,  -1.0, 0.0, 0.0,  -1.0, 0.0, 0.0,  // v1-v6-v7-v2 left
+                0.0,-1.0, 0.0,   0.0,-1.0, 0.0,   0.0,-1.0, 0.0,   0.0,-1.0, 0.0,  // v7-v4-v3-v2 down
+                0.0, 0.0,-1.0,   0.0, 0.0,-1.0,   0.0, 0.0,-1.0,   0.0, 0.0,-1.0   // v4-v7-v6-v5 back
             ])
             this.n = this.indices.length;
             this.vSize = this.vertices.BYTES_PER_ELEMENT;
@@ -83,6 +117,8 @@ class Main {
         this.createBuffer = () => {
 
             this.initArrayBuffer(this.vertices, 3, gl.FLOAT, 'a_Position');
+            this.initArrayBuffer(this.colors, 3, gl.FLOAT, 'a_Color');
+            this.initArrayBuffer(this.normals, 3, gl.FLOAT, 'a_Normal');
             //
             let u_MvpMatrix = gl.getUniformLocation(gl.program, 'u_MvpMatrix');
             let u_ModelMatrix = gl.getUniformLocation(gl.program, 'u_ModelMatrix');
@@ -90,13 +126,10 @@ class Main {
             let u_LightPosition = gl.getUniformLocation(gl.program, 'u_LightPosition');
             let u_AmbientLight = gl.getUniformLocation(gl.program, 'u_AmbientLight');
             let u_NormalMatrix = gl.getUniformLocation(gl.program, 'u_NormalMatrix');
-            let u_Width = gl.getUniformLocation(gl.program, 'u_Width');
-            let u_Height = gl.getUniformLocation(gl.program, 'u_Height');
-            let u_isTime = gl.getUniformLocation(gl.program, 'u_isTime');
-            this.u_isTime = u_isTime;
+
             let mvpMatrix = new Matrix4();
-            mvpMatrix.setPerspective(30, 1, 1, 100);
-            mvpMatrix.lookAt(0,0,14, 0,0,0, 0,1,0);
+            mvpMatrix.setPerspective(30, SCREEN_WIDTH / SCREEN_HEIGHT, 1, 100);
+            mvpMatrix.lookAt(6,6,14, 0,0,0, 0,1,0);
             gl.uniformMatrix4fv(u_MvpMatrix, false, mvpMatrix.elements);
 
             let modelMatrix = new Matrix4();
@@ -122,10 +155,6 @@ class Main {
             // set ambient light
             gl.uniform3f(u_AmbientLight, 0.2,0.2,0.2);
 
-            gl.uniform1f(u_Width, gl.drawingBufferWidth);
-            gl.uniform1f(u_Height, gl.drawingBufferHeight);
-            gl.uniform1f(u_isTime, time);
-
 
 
             // 开始处理链接方式坐标map
@@ -148,9 +177,6 @@ class Main {
         gl.clear(gl.COLOR_BUFFER_BIT);
 
         gl.enable(gl.DEPTH_TEST);
-
-        time += 0.025;
-        gl.uniform1f(this.u_isTime,time);
         // gl.enable(gl.POLYGON_OFFSET_UNITS);
 
         // gl.polygonOffset(1.0, 1.0);
@@ -159,8 +185,6 @@ class Main {
 
         // gl.drawArrays(gl.TRIANGLES,0, this.n);
         gl.drawElements(gl.TRIANGLES, this.n , gl.UNSIGNED_BYTE, 0);
-
-        requestAnimationFrame(this.draw.bind(this));
     }
 }
 
@@ -168,7 +192,5 @@ let main = new Main();
 
 main.init();
 main.draw();
-
-
 
 
