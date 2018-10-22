@@ -45,6 +45,29 @@ let fragmentshader = `
         gl_FragColor = vec4(col, 1.0);
     }
 `;
+
+// let fragmentshader = `
+//     precision mediump float;
+//
+//     uniform float u_Width;
+//     uniform float u_Height;
+//
+//     uniform float u_isTime;
+//
+//
+//     void main() {
+//         vec3 iResolution = vec3(u_Width, u_Height, 1.0);
+//         vec2 fragCoord = vec2(gl_FragCoord.x , gl_FragCoord.y);
+//
+//         vec2  r = iResolution.xy, p = fragCoord - r*.5;
+//         float d = length(p) / r.y, c=1., x = pow(d, .1), y = atan(p.x, p.y) / 6.28;
+//
+//         for (float i = 0.; i < 3.; ++i)
+// c = min(c, length(fract(vec2(x - 2.0*i*.005, fract(y + i*.125)*.5)*20.)*2.-1.));
+//
+//         gl_FragColor = vec4(d+20.*c*d*d*(.6-d));
+//     }
+// `;
 let gl;
 let time = 1.0;
 class Main {
@@ -55,7 +78,7 @@ class Main {
 
         this.initVertexBuffers = () => {
             this.vertices = new Float32Array([
-                1.0, 1.0, 1.0,  -1.0, 1.0, 1.0,  -1.0,-1.0, 1.0,   1.0,-1.0, 1.0,  // v0-v1-v2-v3 front
+                3.0, 3.0, 0.0,  -3.0, 3.0, 0.0,  -3.0,-3.0, 0.0,   3.0,-3.0, 0.0,  // v0-v1-v2-v3 front
             ]);
             this.colors = new Float32Array([
                 1, 0, 0,   1, 0, 0,   1, 0, 0,  1, 0, 0,     // v0-v1-v2-v3 front
