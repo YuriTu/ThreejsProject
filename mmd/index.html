@@ -15,16 +15,42 @@
             overflow: hidden;
         }
         canvas {
-            position:absolute;
+            /*position:absolute;*/
+
         }
+        button {
+            background: #000;
+            color: #fff;
+            line-height: 25px;
+
+
+        }
+        .planContainer {
+            position: absolute;
+            top: 70px;
+            right: 0px;
+            background: azure;
+        }
+        img {
+            width: 100px;
+        }
+        input {
+            border: 1px solid #000;
+        }
+
     </style>
 </head>
 <body>
-    <div class="container"></div>
-    <script src="../libs/three.min.js"></script>
-    <script >
+    <button value="0" class="btn">1</button>
+    <button value="1" class="btn">2</button>
+    <button value="2" class="btn">3</button>
 
-</script>
+    <div class="container"></div>
+    <div class="planContainer">
+
+    </div>
+    <script src="../libs/three.min.js"></script>
+
 
     <script src="../libs/mmdparser.min.js"></script>
     <script src="../libs/ammo.js"></script>
@@ -38,8 +64,6 @@
 
 
     <script src="../js/mmd.bundle.js"></script>
-<script>
 
-</script>
 </body>
 </html>

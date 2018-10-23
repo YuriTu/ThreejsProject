@@ -73,7 +73,7 @@ module.exports = {
         }),
         new DashboardPlugin(),
         new webpack.ProvidePlugin({
-            THREE: 'three',
+            // THREE: 'three',
             TWEEN: '@tweenjs/tween.js',
             Stats: 'stats.js'
         })
