@@ -4,13 +4,13 @@
  * @author takahirox / https://github.com/takahirox/
  */
 
-THREE.TGALoader = function ( manager ) {
+const TGALoader = function ( manager ) {
 
 	this.manager = ( manager !== undefined ) ? manager : THREE.DefaultLoadingManager;
 
 };
 
-THREE.TGALoader.prototype = {
+TGALoader.prototype = {
 
 	constructor: THREE.TGALoader,
 
@@ -546,3 +546,6 @@ THREE.TGALoader.prototype = {
 	}
 
 };
+
+
+export {TGALoader};

@@ -13,7 +13,7 @@
  *  - more precise grant skinning support.
  */
 
-THREE.MMDAnimationHelper = ( function () {
+const MMDAnimationHelper = ( function () {
 
 	/**
 	 * @param {Object} params - (optional)
@@ -945,7 +945,7 @@ THREE.MMDAnimationHelper = ( function () {
 			}
 
 			if ( this.currentTime < this.delayTime ) return false;
-			
+
 			// 'duration' can be bigger than 'audioDuration + delayTime' because of sync configuration
 			if ( ( this.currentTime - this.delayTime ) > this.audioDuration ) return false;
 
@@ -1039,3 +1039,5 @@ THREE.MMDAnimationHelper = ( function () {
 	return MMDAnimationHelper;
 
 } )();
+
+export {MMDAnimationHelper};

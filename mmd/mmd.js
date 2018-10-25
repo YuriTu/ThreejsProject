@@ -1,7 +1,15 @@
 
-// import {MMDAnimationHelper} from "../libs/MMDAnimationHelper";
-// import MMDAnimationHelper from "../libs/MMDAnimationHelper";
-// import {OutlineEffect} from "../libs/OutlineEffect";
+
+
+
+import {TGALoader} from "../libs/TGALoader";
+import {MMDLoader} from "../libs/MMDLoader";
+import {OutlineEffect} from "../libs/OutlineEffect"
+import {CCDIKSolver} from "../libs/CCDIKSolver";
+import {MMDPhysics} from "../libs/MMDPhysics";
+
+
+import { MMDAnimationHelper }from "../libs/MMDAnimationHelper";
 
 const SCREEN_WIDTH = window.innerWidth;
 const SCREEN_HEIGHT = window.innerHeight;
@@ -14,9 +22,15 @@ let container, stats;
 let camera, scene, renderer, effect;
 let mesh;
 
-// THREE.MMDAnimationHelper = MMDAnimationHelper;
-// THREE.OutlineEffect = OutlineEffect;
 
+
+THREE.MMDLoader = MMDLoader;
+THREE.TGALoader = TGALoader;
+THREE.OutlineEffect = OutlineEffect;
+THREE.CCDIKSolver = CCDIKSolver;
+THREE.MMDPhysics = MMDPhysics;
+
+THREE.MMDAnimationHelper = MMDAnimationHelper;
 
 class Main {
     constructor(){

@@ -11,7 +11,7 @@
  *  - Physics in Worker
  */
 
-THREE.MMDPhysics = ( function () {
+const MMDPhysics = ( function () {
 
 	/**
 	 * @param {THREE.SkinnedMesh} mesh
@@ -1404,3 +1404,5 @@ THREE.MMDPhysics = ( function () {
 	return MMDPhysics;
 
 } )();
+
+export {MMDPhysics};

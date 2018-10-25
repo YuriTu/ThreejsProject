@@ -20,7 +20,7 @@
  * } ];
  */
 
-THREE.CCDIKSolver = ( function () {
+const CCDIKSolver = ( function () {
 
 	/**
 	 * @param {THREE.SkinnedMesh} mesh
@@ -453,3 +453,5 @@ THREE.CCDIKSolver = ( function () {
 	return CCDIKSolver;
 
 } )();
+
+export {CCDIKSolver};

@@ -29,7 +29,7 @@
  *  - shadow support.
  */
 
-THREE.MMDLoader = ( function () {
+const MMDLoader = ( function () {
 
 	/**
 	 * @param {THREE.LoadingManager} manager
@@ -1897,3 +1897,5 @@ THREE.MMDLoader = ( function () {
 	return MMDLoader;
 
 } )();
+
+export {MMDLoader};

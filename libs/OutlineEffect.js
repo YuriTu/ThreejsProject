@@ -24,7 +24,7 @@
  *  - support shader material without objectNormal in its vertexShader
  */
 
-THREE.OutlineEffect = function ( renderer, parameters ) {
+const OutlineEffect = function ( renderer, parameters ) {
 
 	parameters = parameters || {};
 
@@ -515,3 +515,6 @@ THREE.OutlineEffect = function ( renderer, parameters ) {
 	};
 
 };
+
+
+export {OutlineEffect};
