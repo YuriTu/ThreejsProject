@@ -12,7 +12,7 @@ const entries = {
     // "canvas"        : "./canvas/canvasProject.js",
     // "rotate"      : "./canvas/rotate/rotate.js",
     // 'particle'     : "./canvas/particle/particle.js",
-    // "webGL"         : "./webGL/webGL.js",
+    "webGL"         : "./webGL/webGL.js",
     // "cube"         : "./cube/index.js",
     // "sketch"         : "./sketchRendering/index.js",
     // "svg"         : "./svg/index.js",
@@ -92,27 +92,27 @@ module.exports = {
         'child_process',
         'aws-sdk'
     ],
-    // devServer: {
-    //     hot    : true,
-    //     inline : true,
-    //     port:9777,
-    //     host:'0.0.0.0',
-    //     proxy  : {
-    //         "/api/*": {
-    //             target       : "http://develop.com",
-    //             changeOrigin : true,
-    //             pathRewrite  : {
-    //                 "^/api": ""
-    //             }
-    //         }
-    //     },
-    //     disableHostCheck:true,
-    //     // headers: {
-    //     //     "Access-Control-Allow-Origin"  : "*",
-    //     //     "Access-Control-Allow-Methods" : "GET, POST, PUT, DELETE, PATCH, OPTIONS",
-    //     //     "Access-Control-Allow-Headers" : "X-Requested-With, content-type, Authorization"
-    //     // }
-    // }
+    devServer: {
+        hot    : true,
+        inline : true,
+        port:9777,
+        host:'0.0.0.0',
+        proxy  : {
+            "/api/*": {
+                target       : "http://develop.com",
+                changeOrigin : true,
+                pathRewrite  : {
+                    "^/api": ""
+                }
+            }
+        },
+        disableHostCheck:true,
+        // headers: {
+        //     "Access-Control-Allow-Origin"  : "*",
+        //     "Access-Control-Allow-Methods" : "GET, POST, PUT, DELETE, PATCH, OPTIONS",
+        //     "Access-Control-Allow-Headers" : "X-Requested-With, content-type, Authorization"
+        // }
+    }
 
 };
 
