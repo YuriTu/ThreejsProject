@@ -10,6 +10,7 @@ const SCREEN_WIDTH = window.innerWidth;
 const SCREEN_HEIGHT = window.innerHeight;
 const HALF_WIDTH = SCREEN_WIDTH / 2;
 const HALF_HEIGHT = SCREEN_HEIGHT / 2;
+const ASPECT = SCREEN_WIDTH / SCREEN_HEIGHT;
 
 
 let canvas = document.querySelector('canvas');
@@ -18,17 +19,25 @@ canvas.height = SCREEN_HEIGHT;
 
 let vertextshader = `
     attribute vec4 a_Position;
+    attribute vec4 a_Normal;
+    
+    uniform mat4 u_MvpMatrix;
+    uniform mat4 u_NormalMatrix;
     
     varying vec4 v_Color;
     void main() {
-        gl_Position = a_Position;
+        gl_Position = u_MvpMatrix * a_Position;
+        vec4 color = vec4(1.0,0.4,0.0,1.0);
+        vec3 lightDirection = normalize(vec3(0.0,0.5,0.7));
+        vec3 normal = normalize( (a_Normal * u_NormalMatrix).xyz );
+        float nDotL = max( dot(normal,lightDirection) ,0.0);
+        v_Color = vec4(color.rgb * nDotL + vec3(0.1),color.a);
+        
     }
 `
 
 let fragmentshader = `
-    #ifdef GL_ES
     precision mediump float;
-    #endif
     varying vec4 v_Color;
     void main() {
         gl_FragColor = v_Color;
@@ -41,6 +50,30 @@ class Main {
     constructor(){
         gl = canvas.getContext('webgl');
         initShaders(gl,vertextshader,fragmentshader);
+        this.arm1Angle = -90.0;
+        this.arm2Angle = 0.0;
+        this.angleStep = 3.0;
+
+
+        this.handleEvent = () => {
+            document.addEventListener('keydown',(e) => {
+                console.log(e.keyCode);
+                switch (e.keyCode) {
+                    case 38:
+                        this.arm1Angle += this.angleStep;
+                        break;
+                    case 40:
+                        this.arm1Angle -= this.angleStep;
+                        break;
+                    case 39:
+                        this.arm2Angle += this.angleStep
+                        break;
+                    case 37:
+                        this.arm2Angle -= this.angleStep
+                        break;
+                }
+            })
+        }
 
 
         this.initVertexBuffers = () => {
@@ -65,6 +98,16 @@ class Main {
                 0.0, 0.0,-1.0,  0.0, 0.0,-1.0,  0.0, 0.0,-1.0,  0.0, 0.0,-1.0  // v4-v7-v6-v5 back
             ])
             // 索引 由于根据三角构成，需要知名索引方式
+            this.indices = new Uint8Array([
+                0, 1, 2,   0, 2, 3,    // front
+                4, 5, 6,   4, 6, 7,    // right
+                8, 9,10,   8,10,11,    // up
+                12,13,14,  12,14,15,    // left
+                16,17,18,  16,18,19,    // down
+                20,21,22,  20,22,23     // back
+            ])
+
+            this.n = this.indices.length;
 
         };
         // 批量构建缓冲区
@@ -84,14 +127,57 @@ class Main {
         };
 
         this.createBuffer = () => {
+            // 创建vertex buffer
             this.initArrayBuffer(this.vertices,3,gl.FLOAT,'a_Position');
+            this.initArrayBuffer(this.normals,3,gl.FLOAT,'a_Normal');
+            // 创建给element 用的索引数据
+            // 释放array buffer target中的数据
+            gl.bindBuffer(gl.ARRAY_BUFFER, null);
+            let indexBuffer = gl.createBuffer();
+            gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER,indexBuffer);
+            gl.bufferData(gl.ELEMENT_ARRAY_BUFFER,this.indices,gl.STATIC_DRAW);
 
+            // 确定mvpmatrix
+            this.mvpMatrix = new Matrix4();
+
+            this.moduleMatrix = new Matrix4();
+            this.moduleMatrix.setTranslate(0.0, -12.0, 0.0);
+            this.moduleMatrix.rotate(this.arm1Angle, 0.0, 1.0, 0.0);
+
+            this.viewMatrix = new Matrix4();
+            this.viewMatrix.setPerspective(50.0, ASPECT,1.0, 100.0);
+
+            this.perspectiveMatrix = new Matrix4();
+            this.perspectiveMatrix.setLookAt(20.0,10.0,30.0,0.0,0.0,0.0,0.0,1.0,0.0);
+
+
+            // ensure normal tranpose matrix
+            this.normalMatrix = new Matrix4();
+
+            this.u_MvpMatrix = gl.getUniformLocation(gl.program, 'u_MvpMatrix');
+            this.u_NormalMatrix = gl.getUniformLocation(gl.program, 'u_NormalMatrix');
+
+        }
+        this.drawBox = () => {
+            this.mvpMatrix.set(this.viewMatrix);
+            // this.mvpMatrix.multiply(this.moduleMatrix);
+            this.mvpMatrix.multiply(this.perspectiveMatrix);
+            this.mvpMatrix.multiply(this.moduleMatrix);
+            gl.uniformMatrix4fv(this.u_MvpMatrix, false, this.mvpMatrix.elements);
+
+            this.normalMatrix.setInverseOf(this.moduleMatrix);
+            this.normalMatrix.transpose();
+
+            gl.uniformMatrix4fv(this.u_NormalMatrix, false, this.normalMatrix.elements);
+
+            gl.drawElements(gl.TRIANGLES,this.n, gl.UNSIGNED_BYTE,0);
         }
     }
     initRender(){
         gl.clearColor(0.0,0.0,0.0,1.0);
     }
     init(){
+        this.handleEvent();
         this.initVertexBuffers();
         this.createBuffer();
         this.initRender();
@@ -99,10 +185,16 @@ class Main {
 
     draw(){
         gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
+        // gl.clear(0.0,0.0,0.0,1.0);
+        let arm1Length = 10.0;
+        this.moduleMatrix.setTranslate(0.0,-12,0.0);
+        this.moduleMatrix.rotate(this.arm2Angle,0.0,0.0,1.0);
+        this.drawBox();
+        this.moduleMatrix.translate(0.0,arm1Length,0.0);
 
-        // gl.drawArrays(gl.TRIANGLES,0, this.n);
-        gl.drawElements(gl.TRIANGLES, this.n , gl.UNSIGNED_BYTE, 0);
-
+        this.moduleMatrix.rotate(this.arm1Angle,0.0,1.0,0.0);
+        this.moduleMatrix.scale(1.3,1.0,1.3);
+        this.drawBox();
         requestAnimationFrame(this.draw.bind(this));
     }
 }
