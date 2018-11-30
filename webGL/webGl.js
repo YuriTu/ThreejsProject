@@ -28,10 +28,10 @@ let vertextshader = `
     void main() {
         gl_Position = u_MvpMatrix * a_Position;
         vec4 color = vec4(1.0,0.4,0.0,1.0);
-        vec3 lightDirection = normalize(vec3(0.0,0.5,0.7));
+        vec3 lightDirection = normalize(vec3(0.0,0.9,0.8));
         vec3 normal = normalize( (a_Normal * u_NormalMatrix).xyz );
         float nDotL = max( dot(normal,lightDirection) ,0.0);
-        v_Color = vec4(color.rgb * nDotL + vec3(0.1),color.a);
+        v_Color = vec4(color.rgb * nDotL + vec3(0.4),color.a);
         
     }
 `
@@ -50,26 +50,69 @@ class Main {
     constructor(){
         gl = canvas.getContext('webgl');
         initShaders(gl,vertextshader,fragmentshader);
-        this.arm1Angle = -90.0;
-        this.arm2Angle = 0.0;
+        this.armBoAngle = -90.0;
+        this.armTopAngle = 0.0;
+        this.handAngle = -90.0;
+        this.fin1Angle = 0.0;
+        this.fin2Angle = 0.0;
         this.angleStep = 3.0;
+
+        this.config = {
+            base : {
+                x:0.0,
+                y:-10.0,
+                z:0.0
+            },
+            armB:{
+                tran:{
+                    x:0.0,
+                    y:-12.0,
+                    z:0.0
+                }
+            },
+            armTop:{
+                // tran:{
+                //     x:
+                // },
+                // ro:{
+                //     x:t
+                // }
+
+            }
+
+
+        }
 
 
         this.handleEvent = () => {
             document.addEventListener('keydown',(e) => {
                 console.log(e.keyCode);
                 switch (e.keyCode) {
-                    case 38:
-                        this.arm1Angle += this.angleStep;
-                        break;
-                    case 40:
-                        this.arm1Angle -= this.angleStep;
-                        break;
                     case 39:
-                        this.arm2Angle += this.angleStep
+                        this.armBoAngle += this.angleStep;
                         break;
                     case 37:
-                        this.arm2Angle -= this.angleStep
+                        this.armBoAngle -= this.angleStep;
+                        break;
+                    case 38:
+                        this.armTopAngle += this.angleStep
+                        break;
+                    case 40:
+                        this.armTopAngle -= this.angleStep;
+                        break;
+                    case 90:
+                        this.handAngle += this.angleStep;
+                        break;
+                    case 88:
+                        this.handAngle -= this.angleStep;
+                        break;
+                    case 67:
+                        this.fin1Angle += this.angleStep;
+                        this.fin2Angle += this.angleStep;
+                        break;
+                    case 86:
+                        this.fin1Angle += this.angleStep;
+                        this.fin2Angle -= this.angleStep;
                         break;
                 }
             })
@@ -87,6 +130,7 @@ class Main {
                -1.5,  0.0,-1.5,  1.5,  0.0,-1.5,  1.5,  0.0, 1.5, -1.5,  0.0, 1.5, // v7-v4-v3-v2 down
                 1.5,  0.0,-1.5, -1.5,  0.0,-1.5, -1.5, 10.0,-1.5,  1.5, 10.0,-1.5  // v4-v7-v6-v5 back
             ])
+
             // 由于在模型建立的时候，各个点是不共享的，所以某个点的法向量其实是由这个点所属与的面决定的，
             // 毕竟一个点不可能有法向量
             this.normals = new Float32Array([
@@ -148,7 +192,7 @@ class Main {
             this.viewMatrix.setPerspective(50.0, ASPECT,1.0, 100.0);
 
             this.perspectiveMatrix = new Matrix4();
-            this.perspectiveMatrix.setLookAt(20.0,10.0,30.0,0.0,0.0,0.0,0.0,1.0,0.0);
+            this.perspectiveMatrix.setLookAt(0.0,0.0,30.0,0.0,0.0,0.0,0.0,1.0,0.0);
 
 
             // ensure normal tranpose matrix
@@ -186,14 +230,40 @@ class Main {
     draw(){
         gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
         // gl.clear(0.0,0.0,0.0,1.0);
-        let arm1Length = 10.0;
-        this.moduleMatrix.setTranslate(0.0,-12,0.0);
-        this.moduleMatrix.rotate(this.arm2Angle,0.0,0.0,1.0);
+        // 先来个底座
+        this.moduleMatrix.setTranslate(this.config.base.x, this.config.base.y,this.config.base.z);
+        this.moduleMatrix.scale(5,0.2,5);
         this.drawBox();
-        this.moduleMatrix.translate(0.0,arm1Length,0.0);
 
-        this.moduleMatrix.rotate(this.arm1Angle,0.0,1.0,0.0);
+
+
+        // 下手
+        this.moduleMatrix.setTranslate(this.config.armB.tran.x,this.config.armB.tran.y,this.config.armB.tran.z);
+        this.moduleMatrix.rotate(this.armBoAngle,0.0,1.0,0.0)
+        this.drawBox();
+
+        // 上手
+        this.moduleMatrix.translate(0.0,10.0,0.0);
+        this.moduleMatrix.rotate(this.armTopAngle,0.0,0.0,1.0);
         this.moduleMatrix.scale(1.3,1.0,1.3);
+        this.drawBox();
+
+        // 手腕
+        this.moduleMatrix.translate(0.0,10.0,0.0);
+        this.moduleMatrix.rotate(this.handAngle ,0.0,1.0,0.0);
+        this.moduleMatrix.scale(1.3,0.2,1.3);
+        this.drawBox();
+
+        // 手指left
+        this.moduleMatrix.translate(0.3,10.0,0.0);
+        this.moduleMatrix.rotate(this.fin1Angle ,1.0,0.0,0.0);
+        this.moduleMatrix.scale(0.1,0.4,0.1);
+        this.drawBox();
+
+        // fin2
+        this.moduleMatrix.translate(0,0.0,-10.0);
+        this.moduleMatrix.rotate(this.fin2Angle ,1.0,0.0,0.0);
+        // this.moduleMatrix.scale(0.1,0.4,0.1);
         this.drawBox();
         requestAnimationFrame(this.draw.bind(this));
     }
