@@ -28,10 +28,10 @@ let vertextshader = `
     void main() {
         gl_Position = u_MvpMatrix * a_Position;
         vec4 color = vec4(1.0,0.4,0.0,1.0);
-        vec3 lightDirection = normalize(vec3(0.0,0.9,0.8));
+        vec3 lightDirection = normalize(vec3(0.0,0.5,0.7));
         vec3 normal = normalize( (a_Normal * u_NormalMatrix).xyz );
         float nDotL = max( dot(normal,lightDirection) ,0.0);
-        v_Color = vec4(color.rgb * nDotL + vec3(0.4),color.a);
+        v_Color = vec4(color.rgb * nDotL + vec3(0.1),color.a);
         
     }
 `
@@ -66,7 +66,7 @@ class Main {
             armB:{
                 tran:{
                     x:0.0,
-                    y:-12.0,
+                    y:-15.0,
                     z:0.0
                 }
             },
@@ -192,7 +192,7 @@ class Main {
             this.viewMatrix.setPerspective(50.0, ASPECT,1.0, 100.0);
 
             this.perspectiveMatrix = new Matrix4();
-            this.perspectiveMatrix.setLookAt(0.0,0.0,30.0,0.0,0.0,0.0,0.0,1.0,0.0);
+            this.perspectiveMatrix.setLookAt(20.10,0.0,30.0,0.0,0.0,0.0,0.0,1.0,0.0);
 
 
             // ensure normal tranpose matrix
@@ -249,10 +249,10 @@ class Main {
         this.drawBox();
 
         // 手腕
-        this.moduleMatrix.translate(0.0,10.0,0.0);
-        this.moduleMatrix.rotate(this.handAngle ,0.0,1.0,0.0);
-        this.moduleMatrix.scale(1.3,0.2,1.3);
-        this.drawBox();
+        // this.moduleMatrix.translate(0.0,10.0,0.0);
+        // this.moduleMatrix.rotate(this.handAngle ,0.0,1.0,0.0);
+        // this.moduleMatrix.scale(1.3,0.2,1.3);
+        // this.drawBox();
 
         // 手指left
         this.moduleMatrix.translate(0.3,10.0,0.0);

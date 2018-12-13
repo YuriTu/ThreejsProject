@@ -13,7 +13,7 @@ const entries = {
     // "rotate"      : "./canvas/rotate/rotate.js",
     // 'particle'     : "./canvas/particle/particle.js",
     "webGL"         : "./webGL/webGL.js",
-    // "cube"         : "./cube/index.js",
+    "cube"         : "./cube/index.js",
     // "sketch"         : "./sketchRendering/index.js",
     // "svg"         : "./svg/index.js",
     // "threejs"       : "./threeProject/3dLine/main",
