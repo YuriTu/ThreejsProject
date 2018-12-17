@@ -12,7 +12,7 @@ const entries = {
     // "canvas"        : "./canvas/canvasProject.js",
     // "rotate"      : "./canvas/rotate/rotate.js",
     // 'particle'     : "./canvas/particle/particle.js",
-    "webGL"         : "./webGL/webGL.js",
+    // "webGL"         : "./webGL/webGL.js",
     "cube"         : "./cube/index.js",
     // "sketch"         : "./sketchRendering/index.js",
     // "svg"         : "./svg/index.js",
@@ -20,7 +20,7 @@ const entries = {
     // "line"          : "./canvas/lightline/app",
     // 'line-all':'./canvas/lightline/app-all',
     // 'threedemo':'./threeProject/demo/main',
-    'mmd':'./mmd/mmd.js',
+    // 'mmd':'./mmd/mmd.js',
 
 };
 module.exports = {
