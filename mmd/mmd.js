@@ -150,7 +150,7 @@ class Main {
                 <div>还有什么想知道的？</div>
                 <img src="./img/chat.png" alt="#">
                 <div>
-                    <input type="text" value="利用知秋的NLP来做智能助手"/>  <span>提交</span>
+                    <input type="text" value="利用NLP来做智能助手"/>  <span>提交</span>
                 </div>
                 `,
                 `
@@ -160,7 +160,7 @@ class Main {
                 <div>还有什么想知道的？</div>
                 <img src="./img/chat.png" alt="#">
                 <div>
-                    <input type="text" value="利用知秋的NLP来做智能助手"/>  <span>提交</span>
+                    <input type="text" value="利用NLP来做智能助手"/>  <span>提交</span>
                 </div>
                 
                 `,
@@ -171,7 +171,7 @@ class Main {
                 <div>还有什么想知道的？</div>
                 <img src="./img/chat.png" alt="#">
                 <div>
-                    <input type="text" value="利用知秋的NLP来做智能助手"/>  <span>提交</span>
+                    <input type="text" value="利用NLP来做智能助手"/>  <span>提交</span>
                 </div>
                 `
             ]

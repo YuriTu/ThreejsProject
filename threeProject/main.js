@@ -51,7 +51,6 @@ class Main {
         stats.update();
         this.render();
         _.raf(this.animate.bind(this));
-
     }
     render(){
         camera.lookAt(scene.position);
